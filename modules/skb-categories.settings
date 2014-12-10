@@ -1,0 +1,17 @@
+skb.module.artifact=skb.categories
+skb.module.directory=categories
+skb.module.version=0.0.3-SNAPSHOT
+skb.module.name=SKB Categories
+skb.module.url=https://github.com/vdmeer/skb-java-categories
+skb.module.description=###
+skb.module.inceptionYear=2010
+skb.module.properties.compiler.source=1.8
+skb.module.properties.compiler.target=1.8
+skb.module.properties.encoding=UTF-8
+skb.module.scm.developerConnection=scm:git:git@github.com:vdmeer/skb-java-categories.git
+skb.module.scm.connection=scm:git:git://github.com/vdmeer/skb-java-categories.git
+skb.module.scm.tag=skb-categories-0.0.3
+skb.module.scm.url=https://github.com/vdmeer/skb-java-categories
+skb.module.issueManagement.url=https://github.com/vdmeer/skb-java-categories/issues
+skb.module.issueManagement.system=github
+skb.module.internalDependencies=skb.collections

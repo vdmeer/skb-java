@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="skb-set-versions">
+	<macrodef name="push-version" description="Updates the internal version string of all SKB source files.">
+		<attribute name="module.dir"/>
+		<attribute name="sourceEncoding"/>
+
+		<sequential>
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" \* @version(.*)"/>
+				<substitution expression=" \* \@version    ${skb.version.long.java}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.java" />
+				</fileset>
+			</replaceregexp>
+
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" \* @version(.*)"/>
+				<substitution expression=" \* \@version    ${skb.version.long.stg}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.stg" />
+				</fileset>
+			</replaceregexp>
+
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" \* @version(.*)"/>
+				<substitution expression=" \* \@version    ${skb.version.long.g}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.g" />
+					<include name="src/**/*.g4" />
+				</fileset>
+			</replaceregexp>
+
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" \* @version(.*)"/>
+				<substitution expression=" \* \@version    ${skb.version.long.cola}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.cola" />
+				</fileset>
+			</replaceregexp>
+
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" \* @version(.*)"/>
+				<substitution expression=" \* \@version    ${skb.version.long.pola}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.pola" />
+				</fileset>
+			</replaceregexp>
+
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" \* @version(.*)"/>
+				<substitution expression=" \* \@version    ${skb.version.long.glue}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.glue" />
+				</fileset>
+			</replaceregexp>
+
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \/\/ @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern="// @version(.*)"/>
+				<substitution expression="// \@version    ${skb.version.long.json}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.json" />
+				</fileset>
+			</replaceregexp>
+
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" \* @version(.*)"/>
+				<substitution expression=" \* \@version    ${skb.version.long.dal}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.dal" />
+				</fileset>
+			</replaceregexp>
+
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" \* @version(.*)"/>
+				<substitution expression=" \* \@version    ${skb.version.long.properties}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.properties" />
+				</fileset>
+			</replaceregexp>
+
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" \* @version(.*)"/>
+				<substitution expression=" \* \@version    ${skb.version.long.php}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="src/**/*.php5" />
+					<include name="src/**/*.tpl" />
+				</fileset>
+			</replaceregexp>
+		</sequential>
+	</macrodef>
+</project>

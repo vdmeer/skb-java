@@ -1,0 +1,17 @@
+skb.module.artifact=skb.commons
+skb.module.directory=commons
+skb.module.version=0.0.3-SNAPSHOT
+skb.module.name=SKB Commons
+skb.module.url=https://github.com/vdmeer/skb-java-commons
+skb.module.description=###
+skb.module.inceptionYear=2010
+skb.module.properties.compiler.source=1.8
+skb.module.properties.compiler.target=1.8
+skb.module.properties.encoding=UTF-8
+skb.module.scm.developerConnection=scm:git:git@github.com:vdmeer/skb-java-commons.git
+skb.module.scm.connection=scm:git:git://github.com/vdmeer/skb-java-commons.git
+skb.module.scm.tag=skb-commons-0.0.3
+skb.module.scm.url=https://github.com/vdmeer/skb-java-commons
+skb.module.issueManagement.url=https://github.com/vdmeer/skb-java-commons/issues
+skb.module.issueManagement.system=github
+skb.module.internalDependencies=skb.composite skb.configuration

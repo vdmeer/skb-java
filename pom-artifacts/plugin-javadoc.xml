@@ -1,0 +1,27 @@
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<optimize>true</optimize>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.1</version>
+				<configuration>
+					<encoding>${project.resources.sourceEncoding}</encoding>
+					<docencoding>${project.resources.sourceEncoding}</docencoding>
+					<charset>${project.resources.sourceEncoding}</charset>
+					<aggregate>true</aggregate>
+					<overview>overview.html</overview>
+					<nohelp>true</nohelp>
+					<header>${project.name}: ${project.version}</header>
+					<footer>${project.name}: ${project.version}</footer>
+					<doctitle>${project.name}: ${project.version}</doctitle>
+				</configuration>
+			</plugin>

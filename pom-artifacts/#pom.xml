@@ -1,0 +1,120 @@
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<preparationGoals>clean install</preparationGoals>
+					<arguments>-DupdateReleaseInfo -Dvg.local=false</arguments>
+					<mavenExecutorId>forked-path</mavenExecutorId>
+					<goals>install</goals>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<overview>overview.html</overview>
+					<nohelp>true</nohelp>
+					<header>SKB, ${project.version}</header>
+					<footer>SKB, ${project.version}</footer>
+					<doctitle>SKB, ${project.version}</doctitle>
+					<groups>
+						<group>
+							<title>SKB - All</title>
+							<packages>de.vandermeer.skb*:de.vandermeer.svg2vector</packages>
+						</group>
+<!--
+						<group>
+							<title>Vector Formats</title>
+							<packages>org.freehep.graphicsio.emf*:org.freehep.graphicsio.pdf*:org.freehep.graphicsio.ps*:org.freehep.graphicsio.svg*:org.freehep.graphicsio.swf*</packages>
+						</group>
+						<group>
+							<title>Bitmap Formats</title>
+							<packages>org.freehep.graphicsio.gif*:org.freehep.graphicsio.png*:org.freehep.graphicsio.ppm*:org.freehep.graphicsio.raw*</packages>
+						</group>
+-->
+					</groups>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+
+	<profiles>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<inherited>true</inherited>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.3</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<inherited>true</inherited>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9.1</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<inherited>true</inherited>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-deploy-plugin</artifactId>
+						<version>2.8.2</version>
+						<configuration>
+							<updateReleaseInfo>true</updateReleaseInfo>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+</project>

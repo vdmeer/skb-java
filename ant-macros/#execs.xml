@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="skb-ant-execs" xmlns:ivy="antlib:org.apache.ivy.ant">s
+<!--
+	<macrodef name="execs">
+		<attribute name="main.name" default="de.vandermeer.execs.Skb_Exec"/>
+		<attribute name="command" default="-h"/>
+		<attribute name="pathid" default="de.vandermeer.execs"/>
+		<attribute name="arguments" default="-l"/>
+		<sequential>
+			<echo message="ExecS: running @{command} with line: @{arguments}"/>
+			<java classname="@{main.name}" classpathref="@{pathid}">
+				<arg line="@{command} @{arguments}" />
+			</java>
+		</sequential>
+	</macrodef>
+-->
+</project>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="skb" default="set-versions">
+	<!-- e.g. = modules/skb-asciitable.settings -->
+	<!-- ant -f ant-macros/version.build.xml  -DmoduleFile=../modules/skb-asciitable.settings -->
+	<property file="${moduleFile}"/>
+
+	<property name="module.version" value="${skb.module.version}"/>
+	<property name="target.version" value="${skb.module.properties.compiler.target}"/>
+
+	<tstamp>
+		<format property="skb.built.6d" pattern="yyMMdd" />
+		<format property="skb.built.2d3c4d" pattern="dd-MMM-yy" />
+	</tstamp>
+
+	<property file="set-versions.macro.properties"/>
+	<import file="set-versions.macro.xml"/>
+
+	<target name="set-versions">
+		<push-version
+			module.dir="../../${skb.module.directory}"
+			sourceEncoding="${skb.module.properties.encoding}"
+		/>
+	</target>
+</project>

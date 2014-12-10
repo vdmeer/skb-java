@@ -1,0 +1,81 @@
+SKB Java
+--------
+
+[NOTE]
+Links are given as _github_ and _local_.
+_github_ links refer to links to respective Github repositories.
+_local_ links refer to an local HTML file. This needs all repositories to be cloned locally.
+
+
+Projects
+~~~~~~~~
+The SKB is a collection of projects, all with their own Github repository.
+Each project can be build separatly. This repository contains a POM, shell scripts, ant tasks and macros, and
+settings to maintain all projects. While most projects are named +skb-java-+, there are a few execeptions,
+namely the execution service (execs), the ASCII table (asciitable) and the SVG 2 Vector converter (svg2vector).
+
+Most projects will have inter-dependencies, but there are no circular dependencies
+(try link:http://structure101.com/[Structure101] and see for yourself, it is free for OSS project).
+
+Currently, there are the following stand-alone projects:
+
+* svg2vector:	A tool to convert SVG/SVGZ to EMF, PDF and SVG, with layer management
+	(link:https://github.com/vdmeer/svg2vector[github], link:../svg2vector/README.html[local])
+* asciitable:	An ASCII table using 7-bit and UTF-8 border characters	
+	(link:https://github.com/vdmeer/asciitable[github], link:../asciitable/README.html[local])
+* execs:		A simple set of classes to execute programmes from the command line
+	(link:https://github.com/vdmeer/execs[github], link:../execs/README.html[local])
+
+Currently, there are the followin SKB-Java projects:
+
+* skb-base:			Base definitions and classes, including utilities and a 5WH message object
+	(link:https://github.com/vdmeer/skb-java-base[github], link:../base/README.html[local])
+* skb-categories	Interfaces that build hiearchies of categories, e.g. for keys, values, lists, options, DSLs
+	(link:https://github.com/vdmeer/skb-java-categories[github], link:../categories/README.html[local])
+* skb-collections	Set of classes handling Java collections
+	(link:https://github.com/vdmeer/skb-java-collections[github], link:../collections/README.html[local])
+* skb-commons		Common classes for tables and trees, plus utility classes such as ReportManager, CLI parser
+	(link:https://github.com/vdmeer/skb-java-commons[github], link:../commons/README.html[local])
+* skb-composite		Base classes for implementing the composite pattern, including Special Objects
+	(link:https://github.com/vdmeer/skb-java-composite[github], link:../composite/README.html[local])
+* skb-configuration	Set of standard configurations for other SKB applications
+	(link:https://github.com/vdmeer/skb-java-configuration[github], link:../configuration/README.html[local])
+* skb-examples		(Growing) set of examples on how to use the other SKB projects
+	(link:https://github.com/vdmeer/skb-java-examples[github], link:../examples/README.html[local])
+
+Use
+~~~
+The +SKB+ projects are (will) be published at the Central Repository.
+Simply use the dependency information for your preferred dependency manager.
+They are all published under +de.vandermeer+.
+For a list see the link:https://search.maven.org/#search%7Cga%7C1%7Cvandermeer[Central Repository]
+(type 'vandermeer' in te search form).
+
+
+Old, obsolete projects:
+
+* svg2emf - now in svg2vector
+* skb-asciitable - now asciitable
+* skb-execs - now execs
+
+
+Development
+~~~~~~~~~~~
+Eclipse settings (classpath and project files) plus settings for maven files are part of each repository.
+Since the POM files are independent, simply import the Maven projects into Eclipse and build them.
+To use Eclipse, do the following:
+
+* Get a Java SE Eclipse distribution from http://www.eclipse.org/downloads/, latest version tested is Juno SR 1
+	** Install Eclipse
+	** Follow instructions at https://github.com/vdmeer/skb/wiki/HowTo-Eclipse[SKB HowTo-Eclipse] to enable Java 8 support
+* Install plugins
+	** Follow the plug-in instructions at https://github.com/vdmeer/skb/wiki/HowTo-Eclipse[SKB HowTo-Eclipse] and install
+		*** Findbugs - for bug analysis
+		*** Logback - as a frontend for log4j log messages
+		*** ANTLR4IDE - to compile ANTLR 4 grammars
+		*** Structure 101 - to realise structural analysis of the +SKB+ java code
+
+
+Build
+~~~~~
+Simply use Maven 3 on the command line to build the repositories.

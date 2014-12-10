@@ -1,0 +1,486 @@
+#!/bin/bash
+
+#programme name, used to echos
+prog_name=`basename $0`
+
+#target directory
+dir_target="target"
+
+#defined modules taken from the module directory
+defined_modules=`ls modules/*.settings | sed -e 's/modules\///' -e 's/\.settings//'`
+
+#defined tasks as per functions in this script
+defined_tasks="prepare-files test-files create-pom process-asciidoc set-versions"
+
+#version file with BASH variable exports
+fn_version_bash="$dir_target/version.bash"
+
+#version file in ANT/MAVEN property style
+fn_version_ant="$dir_target/version.ant"
+
+#unset file for bash
+fn_bash_unset="$dir_target/unset.bash"
+
+#
+# Help screen and exit condition (i.e. too few arguments)
+#
+Help()
+{
+	echo "$prog_name - prepares SKB modules for deployment"
+	echo "       Usage:  $prog_name [-options] [task] [module]"
+	echo "         - use <-m module> and <-t task>"
+	echo "         - use -ma plus <-t task>"
+	echo "         - use -ta plus <-m module>"
+	echo "         - use -ma and -ta and no further task nor module"
+	echo ""
+	echo "       Options"
+	echo "       -ma    - process all defined modules"
+	echo "       -ta    - process all defined tasks"
+	echo "       -h     - this help screen"
+	echo "       -S     - silent mode, do not output anything except errors"
+	echo "       -c     - clean up, remove all generated files"
+	echo ""
+	echo "       Defined tasks:"
+	for task in $defined_tasks
+	do
+		echo "       - $task"
+	done
+	echo ""
+	echo "       Defined modules:"
+	for mod in $defined_modules
+	do
+		echo "       - $mod"
+	done
+	echo ""
+	echo "       Requirements: asciidoc (in path), ant (in path)"
+	echo ""
+	exit 255;
+}
+if [ $# -eq 0 ]; then
+	Help
+fi
+
+
+
+#
+#Process CLI and set processing parameters
+# - we process all CLI options before going any further
+# - we exit programme if CLI options are amigious (we don't want a wiered machine!)
+#
+all_modules=false
+all_tasks=false
+cli_module=
+cli_task=
+progmod_silent=false
+while [ $# -gt 0 ]
+do
+	case $1 in
+		#-c cleans up
+		-c)		rm -fr $dir_target;exit 255;;
+
+		#-h prints help and exists
+		-h)		Help;exit 255;;
+
+		#-S activates silent mode
+		-S)		shift;progmod_silent=true;;
+
+		# -ma checks if a single module was given, if not then set all modules to true
+		-ma)	if [ "$cli_module" == "" ]; then
+					shift;
+					all_modules=true;
+				else
+					echo "$prog_name: -ma used and single module specified, which one?";
+					exit 255;
+				fi
+		;;
+
+		# -ta checks if a single task was given, if not then set all tasks to true
+		-ta)	if [ "$cli_task" == "" ]; then
+					shift;
+					all_tasks=true;
+				else
+					echo "$prog_name: -ta used and single task specified, which one?";
+					exit 255;
+				fi
+		;;
+
+		# -t checks if all tasks are used, if not then if a task is given
+		-t)		if [ $all_tasks == true ]; then
+					echo "$prog_name: single task specified and -ta used, which one?";
+					exit 255;
+				else
+					shift;
+					if [ "$1" == "" ];then
+						echo "$prog_name: -t used without a task";
+						exit 255;
+					else
+						cli_task=$1;
+						shift;
+					fi
+				fi
+		;;
+
+		# -m checks if all modules are used, if not then if a module is given
+		-m)		if [ $all_modules == true ]; then
+					echo "$prog_name: single module specified and -ma used, which one?";
+					exit 255;
+				else
+					shift;
+					if [ "$1" == "" ];then
+						echo "$prog_name: -m used without a module";
+						exit 255;
+					else
+						cli_module=$1;
+						shift;
+					fi
+				fi
+		;;
+		*)	echo "$prog_name: undefined CLI option - $1"; exit 255;;
+	esac
+done
+
+#now check if we have modules and tasks to process and if they are valid
+
+#start with modules
+todo_modules=
+if [ $all_modules == true ]; then
+	#case 1: all_modules is true
+	todo_modules=$defined_modules
+else
+	if [ "$cli_module" == "" ]; then
+		#case 2: all_modules is false, cli_module is empty
+		echo "$prog_name: no module given"; exit 255;
+	else
+		#case 3: all_modules is false, cli_module is not empty
+		for mod in $defined_modules
+		do
+			if [ "$mod" == "$cli_module" ]; then
+				todo_modules=$cli_module
+			fi
+		done
+		if [ "$todo_modules" == "" ]; then
+			echo "$prog_name: no valid module given - module <$cli_module> is not defined"; exit 255;
+		fi
+	fi
+fi
+
+#next is tasks
+todo_tasks=
+if [ $all_tasks == true ]; then
+	#case 1: all_tasks is true
+	todo_tasks="$defined_tasks"
+else
+	if [ "$cli_task" == "" ]; then
+		#case 2: all_tasks is false, cli_task is empty
+		echo "$prog_name: no task given"; exit 255;
+	else
+		#case 3: all_tasks is false, cli_task is not empty
+		for mod in $defined_tasks
+		do
+			if [ "$mod" == "$cli_task" ]; then
+				todo_tasks="$cli_task"
+			fi
+		done
+		if [ "$todo_tasks" == "" ]; then
+			echo "$prog_name: no valid task given - task <$cli_task> is not defined"; exit 255;
+		fi
+	fi
+fi
+
+
+
+#
+#Function to echo messages, except when in silent mode
+#
+PrintMessage()
+{
+	if [ $progmod_silent == false ]; then
+		if [ "$2" == "" ]; then
+			echo "$1"
+		else
+			echo "$1: $2"
+		fi
+	fi
+}
+
+
+
+#now we have a list of modules and tasks in the todo_ variables, minimum length is 1
+PrintMessage $prog_name "processing modules: $todo_modules"
+PrintMessage $prog_name "processing tasks:   $todo_tasks"
+
+
+
+#
+#Prepare the infrastructure, general plus module specific
+#
+prepare-files()
+{
+	if [ ! -d $dir_target ]; then
+		mkdir $dir_target
+	fi
+
+	if [ ! -f $fn_version_bash ]; then
+		touch $fn_version_bash
+	fi
+
+	if [ ! -f $fn_version_ant ]; then
+		touch $fn_version_ant
+	fi
+
+	if [ ! -f $fn_bash_unset ]; then
+		touch $fn_bash_unset
+	fi
+
+	#read settings for module and then create a BASH file for that
+	fn_in=modules/$1.settings
+	fn_out=$dir_target/$1.bash
+	echo "" > $fn_out
+	#read variables are all variables from all files, so that we can create an unset file
+	while IFS='
+	' read line
+	do
+		if [[ ! $line == \#* ]] && [[ ! ${#line} == 0 ]] ; then
+			#set the general variable using the settings file
+			VAR_NAME=`echo $line | sed -e 's/=.*//' | sed -e 's/\./_/g'`
+			VAR_VAL=`echo $line | sed -e 's/^[^=]*=//'`
+			echo "export ${VAR_NAME}=\"${VAR_VAL}\"" >> $fn_out
+			echo "unset -v ${VAR_NAME}" >> $fn_bash_unset
+
+			#if the setting is about the artifact name, then set BASH formattings for that
+			if [[ $line == "skb.module.artifact="* ]] ; then
+				VAR_ARTIFACT_BASH="`echo $line | sed -e 's/^[^=]*=//' | sed -e 's/\./_/g'`_version"
+				echo "export artifact_version_bash=\"${VAR_ARTIFACT_BASH}\"" >> $fn_out
+				echo "unset -v artifact_version_bash" >> $fn_bash_unset
+			fi
+		fi
+	done < $fn_in
+
+	#source that created bash file for version processing
+	source $fn_out
+
+	#new create version information
+	#first, process the ANT file
+	if grep -q $skb_module_artifact "$fn_version_ant"; then
+		#ok, the version is already in there, replace
+		fn_tmp=$fn_version_ant.tmp
+		touch $fn_tmp
+		while IFS='
+		' read line
+		do
+			if [[ $line == "$skb_module_artifact="* ]] ; then
+				echo "$skb_module_artifact=$skb_module_version" >> $fn_tmp
+			else
+				echo "$line" >> $fn_tmp
+			fi
+		done < $fn_version_ant
+		mv $fn_tmp $fn_version_ant
+	else
+		#version not in there yet, add
+		echo "$skb_module_artifact=$skb_module_version" >> $fn_version_ant
+	fi
+
+	#next, process the BASH file
+	if grep -q "export $artifact_version_bash" "$fn_version_bash"; then
+		#ok, the version is already in there, replace
+		fn_tmp=$fn_version_bash.tmp
+		touch $fn_tmp
+		while IFS='
+		' read line
+		do
+			if [[ $line == "export $artifact_version_bash="* ]] ; then
+				echo "export $artifact_version_bash=$skb_module_version" >> $fn_tmp
+				echo "unset -v $artifact_version_bash" >> $fn_bash_unset
+			else
+				echo "$line" >> $fn_tmp
+			fi
+		done < $fn_version_bash
+		mv $fn_tmp $fn_version_bash
+	else
+		#version not in there yet, add
+		echo "export $artifact_version_bash=$skb_module_version" >> $fn_version_bash
+		echo "unset -v $artifact_version_bash" >> $fn_bash_unset
+	fi
+
+	#finally remove duplicates from the unset file
+	sort $fn_bash_unset | uniq -d > $fn_bash_unset.tmp
+	sort $fn_bash_unset | uniq -u >> $fn_bash_unset.tmp
+	mv $fn_bash_unset.tmp $fn_bash_unset
+}
+
+
+
+#
+#Test the infrastructure, general and module specific
+#
+test-files()
+{
+	if [ ! -d $dir_target ]; then
+		PrintMessage "no target directory found, cannot proceed, try task <prepare-files>"
+		exit 255
+	fi
+	if [ ! -f $fn_version_ant ]; then
+		PrintMessage "no version file for ANT found, cannot proceed, try task <prepare-files>"
+		exit 255
+	fi
+	if [ ! -f $fn_version_bash ]; then
+		PrintMessage "no version file for BASH found, cannot proceed, try task <prepare-files>"
+		exit 255
+	fi
+	if [ ! -f $dir_target/$1.bash ]; then
+		PrintMessage "no BASH settings file for module <$1> found, cannot proceed, try task <prepare-files> for module <$1>"
+		exit 255
+	fi
+
+	PrintMessage "------> all files ok for module <$1>"
+}
+
+
+
+#
+#process a modules standard ASCIIDOC files
+#
+process-asciidoc()
+{
+	ad_files="CHANGELOG.asciidoc README.asciidoc"
+	for file in $ad_files
+	do
+		(cd ../$skb_module_directory; asciidoc $file)
+	done
+}
+
+
+
+#
+#create a POM. Use $1 as the tmp file name
+#
+create-pom()
+{
+	source $fn_version_bash
+
+	pom_artifacts_dir="pom-artifacts/"
+	file_extension=".pom.xml"
+	gen_directory=$dir_target/generated-poms
+	if [ ! -d $gen_directory ]; then
+		mkdir $gen_directory
+	fi
+
+	out_fn_fqpn=$gen_directory/$1$file_extension
+	echo -n "" > $out_fn_fqpn
+
+	pom_fn_fqpn=../$skb_module_directory/pom.xml
+
+	cat $pom_artifacts_dir/project-open.xml >> $out_fn_fqpn
+		cat $pom_artifacts_dir/modelVersion.xml >> $out_fn_fqpn
+		echo "	<groupId>de.vandermeer</groupId>" >> $out_fn_fqpn
+		echo "	<artifactId>$skb_module_artifact</artifactId>" >> $out_fn_fqpn
+		echo "	<version>$skb_module_version</version>" >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
+		echo "	<name>$skb_module_name</name>" >> $out_fn_fqpn
+		echo "	<url>$skb_module_url</url>" >> $out_fn_fqpn
+		echo "	<description>$skb_module_description</description>" >> $out_fn_fqpn
+		echo "	<inceptionYear>$skb_module_inceptionYear</inceptionYear>" >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
+		echo "	<properties>" >> $out_fn_fqpn
+			echo "		<maven.compiler.source>$skb_module_properties_compiler_source</maven.compiler.source>" >> $out_fn_fqpn
+			echo "		<maven.compiler.target>$skb_module_properties_compiler_target</maven.compiler.target>" >> $out_fn_fqpn
+			echo "		<project.build.sourceEncoding>$skb_module_properties_encoding</project.build.sourceEncoding>" >> $out_fn_fqpn
+			echo "		<project.resources.sourceEncoding>$skb_module_properties_encoding</project.resources.sourceEncoding>" >> $out_fn_fqpn
+			echo "		<encoding>$skb_module_properties_encoding</encoding>" >> $out_fn_fqpn
+			echo "		<file.encoding>$skb_module_properties_encoding</file.encoding>" >> $out_fn_fqpn
+			cat $pom_artifacts_dir/properties.xml >> $out_fn_fqpn
+		echo "	</properties>" >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
+		cat $pom_artifacts_dir/licence.xml >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
+		cat $pom_artifacts_dir/prerequisites.xml >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
+		echo "	<scm>" >> $out_fn_fqpn
+			echo "		<developerConnection>$skb_module_scm_developerConnection</developerConnection>" >> $out_fn_fqpn
+			echo "		<connection>$skb_module_scm_connection</connection>" >> $out_fn_fqpn
+			echo "		<tag>$skb_module_scm_tag</tag>" >> $out_fn_fqpn
+			echo "		<url>$skb_module_scm_url</url>" >> $out_fn_fqpn
+		echo "	</scm>" >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
+		echo "	<issueManagement>" >> $out_fn_fqpn
+			echo "		<url>$skb_module_issueManagement_url</url>" >> $out_fn_fqpn
+			echo "		<system>$skb_module_issueManagement_system</system>" >> $out_fn_fqpn
+		echo "	</issueManagement>" >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
+		echo "	<dependencies>" >> $out_fn_fqpn
+			for intdep in $skb_module_internalDependencies
+			do
+				_v=`echo $intdep | sed -e 's/\./_/g'`_version
+				settings_fn=modules/$intdep.settings
+				echo "		<dependency>" >> $out_fn_fqpn
+				echo "			<groupId>de.vandermeer</groupId>" >> $out_fn_fqpn
+				echo "			<artifactId>$intdep</artifactId>" >> $out_fn_fqpn
+				echo "			<version>${!_v}</version>" >> $out_fn_fqpn
+				echo "		</dependency>" >> $out_fn_fqpn
+			done
+			cat modules/$1-dependencies.xml >> $out_fn_fqpn
+		echo "	</dependencies>" >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
+		echo "	<build>" >> $out_fn_fqpn
+		echo "		<plugins>" >> $out_fn_fqpn
+		cat pom-artifacts/plugin-compiler.xml >> $out_fn_fqpn
+		cat pom-artifacts/plugin-javadoc.xml >> $out_fn_fqpn
+		echo "		</plugins>" >> $out_fn_fqpn
+		echo "	</build>" >> $out_fn_fqpn
+
+	cat $pom_artifacts_dir/project-close.xml >> $out_fn_fqpn
+
+	cat $out_fn_fqpn > $pom_fn_fqpn
+	#rm $out_fn_fqpn
+}
+
+
+
+#
+#Sets versions of some file types using ANT
+#
+set-versions()
+{
+	ant -S -f ant-macros/set-versions.build.xml  -DmoduleFile=../modules/$1.settings
+}
+
+
+
+#
+#Source files requried to process tasks for modules
+#
+SourceFiles()
+{
+	source $fn_version_bash >& /dev/null
+	source $fn_bash_unset >& /dev/null
+	source $dir_target/$1.bash >& /dev/null
+}
+
+
+
+for mod in $todo_modules
+do
+	PrintMessage "--> <$mod>"
+	SourceFiles $mod
+	for task in $todo_tasks
+	do
+		PrintMessage "----> $task"
+		$task $mod
+	done
+done
+exit 255;
+
+
+#for mod in $defined_modules
+#do
+#	echo "ant -S -f ant-macros/version.build.xml  -DmoduleFile=../modules/$mod.settings"
+#done
+

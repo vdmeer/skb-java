@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="skb-ant-create-run-scripts" xmlns:ivy="antlib:org.apache.ivy.ant">
+	<macrodef name="create-run-scripts">
+		<attribute name="template.dir"/>
+		<attribute name="template.file.bat" default="bat" />
+		<attribute name="template.file.sh" default="sh" />
+		<attribute name="dest.file"/>
+		<attribute name="dest.dir"/>
+		<attribute name="demo.home.dir.dos"/>
+		<attribute name="demo.home.dir.cyg"/>
+		<attribute name="exec.name" default="" />
+
+		<sequential>
+			<copy file="@{template.dir}/@{template.file.bat}.tpl" tofile="@{dest.dir}/bin/bat/@{dest.file}.bat" />	
+			<replace file="@{dest.dir}/bin/bat/@{dest.file}.bat" token="##DEMO_HOME##" value="@{demo.home.dir.dos}"/>
+			<replace file="@{dest.dir}/bin/bat/@{dest.file}.bat" token="##EXEC_NAME##" value="@{exec.name}"/>
+			<replace file="@{dest.dir}/bin/bat/@{dest.file}.bat" token="##RUN_SCRIPT##" value="bat\run.bat"/>
+			<replace file="@{dest.dir}/bin/bat/@{dest.file}.bat" token="##DEMO_VAR##" value="%DEMO_HOME%"/>
+			<replace file="@{dest.dir}/bin/bat/@{dest.file}.bat" token="##JAVA_CP_SEP##" value=";"/>
+
+			<copy file="@{template.dir}/@{template.file.sh}.tpl" tofile="@{dest.dir}/bin/sh/@{dest.file}.sh" />
+			<replace file="@{dest.dir}/bin/sh/@{dest.file}.sh" token="##DEMO_HOME##" value="@{demo.home.dir.cyg}"/>
+			<replace file="@{dest.dir}/bin/sh/@{dest.file}.sh" token="##EXEC_NAME##" value="@{exec.name}"/>
+			<replace file="@{dest.dir}/bin/sh/@{dest.file}.sh" token="##RUN_SCRIPT##" value="sh/run.sh"/>
+			<replace file="@{dest.dir}/bin/sh/@{dest.file}.sh" token="##DEMO_VAR##" value="${DEMO_HOME}"/>
+			<replace file="@{dest.dir}/bin/sh/@{dest.file}.sh" token="##JAVA_CP_SEP##" value=":"/>
+
+			<copy file="@{template.dir}/@{template.file.sh}.tpl" tofile="@{dest.dir}/bin/cyg/@{dest.file}.sh" />
+			<replace file="@{dest.dir}/bin/cyg/@{dest.file}.sh" token="##DEMO_HOME##" value="@{demo.home.dir.dos}"/>
+			<replace file="@{dest.dir}/bin/cyg/@{dest.file}.sh" token="##EXEC_NAME##" value="@{exec.name}"/>
+			<replace file="@{dest.dir}/bin/cyg/@{dest.file}.sh" token="##RUN_SCRIPT##" value="cyg/run.sh"/>
+			<replace file="@{dest.dir}/bin/cyg/@{dest.file}.sh" token="##DEMO_VAR##" value="${DEMO_HOME}"/>
+			<replace file="@{dest.dir}/bin/cyg/@{dest.file}.sh" token="##JAVA_CP_SEP##" value=";"/>
+			<replace file="@{dest.dir}/bin/cyg/@{dest.file}.sh" token="${DEMO_HOME}/bin/sh/" value="${DEMO_HOME}/bin/cyg/"/>
+		</sequential>
+	</macrodef>
+</project>

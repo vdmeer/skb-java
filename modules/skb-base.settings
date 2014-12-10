@@ -1,0 +1,16 @@
+skb.module.artifact=skb.base
+skb.module.directory=base
+skb.module.version=0.0.3-SNAPSHOT
+skb.module.name=SKB Base
+skb.module.url=https://github.com/vdmeer/skb-java-base
+skb.module.description=Base definitions, some standard classes and services, categories for the SKB, and the base line for composite hierarchies for the SKB.
+skb.module.inceptionYear=2010
+skb.module.properties.compiler.source=1.8
+skb.module.properties.compiler.target=1.8
+skb.module.properties.encoding=UTF-8
+skb.module.scm.developerConnection=scm:git:git@github.com:vdmeer/skb-java-base.git
+skb.module.scm.connection=scm:git:git://github.com/vdmeer/skb-java-base.git
+skb.module.scm.tag=skb-base-0.0.3
+skb.module.scm.url=https://github.com/vdmeer/skb-java-base
+skb.module.issueManagement.url=https://github.com/vdmeer/skb-java-base/issues
+skb.module.issueManagement.system=github
