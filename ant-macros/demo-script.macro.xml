@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="demo-script">
-
 	<macrodef name="create-demo-script">
-		<!-- directory with created templates -->
-		<attribute name="template.dir" default="@{template.dir}" />
+		<attribute name="demo.dir"     default="${demo.dir}" />
+		<attribute name="demo.dir.cyg" default="${demo.dir.cyg}" />
+		<attribute name="demo.dir.dos" default="${demo.dir.dos}" />
 
 		<!-- template files with execution for BATCH and SH -->
 		<attribute name="template.file.bat" default="bat-exec" />
@@ -11,40 +11,39 @@
 
 		<!-- destiation file and directory for copy and replacement instructions -->
 		<attribute name="dest.file" />
-		<attribute name="dest.dir" default="@{dest.dir}"/>
-
-		<!-- DEMO directory in DOS and CYGWIN style for DEMO_HOME substitution -->
-		<attribute name="demo.dir.dos" default="@{demo.dir.dos}"/>
-		<attribute name="demo.dir.cyg" default="@{demo.dir.cyg}"/>
 
 		<!-- name of the Java class to execute -->
 		<attribute name="exec.name" default="" />
 
 		<sequential>
-			<copy file="${template.dir}/@{template.file.bat}.tpl" tofile="${dest.dir}/bin/bat/@{dest.file}.bat" />	
-			<replace file="${dest.dir}/bin/bat/@{dest.file}.bat" token="##DEMO_HOME##" value="${demo.dir.dos}"/>
-			<replace file="${dest.dir}/bin/bat/@{dest.file}.bat" token="##EXEC_NAME##" value="@{exec.name}"/>
-			<replace file="${dest.dir}/bin/bat/@{dest.file}.bat" token="##JAVA_MAIN_CLASS##" value="@{exec.name}"/>
-			<replace file="${dest.dir}/bin/bat/@{dest.file}.bat" token="##RUN_SCRIPT##" value="bat\run.bat"/>
-			<replace file="${dest.dir}/bin/bat/@{dest.file}.bat" token="##DEMO_VAR##" value="%DEMO_HOME%"/>
-			<replace file="${dest.dir}/bin/bat/@{dest.file}.bat" token="##JAVA_CP_SEP##" value=";"/>
+			<mkdir dir="@{demo.dir}/bin/bat"/>
+			<mkdir dir="@{demo.dir}/bin/cyg"/>
+			<mkdir dir="@{demo.dir}/bin/sh"/>
 
-			<copy file="${template.dir}/@{template.file.sh}.tpl" tofile="${dest.dir}/bin/sh/@{dest.file}.sh" />
-			<replace file="${dest.dir}/bin/sh/@{dest.file}.sh" token="##DEMO_HOME##" value="${demo.dir.cyg}"/>
-			<replace file="${dest.dir}/bin/sh/@{dest.file}.sh" token="##EXEC_NAME##" value="@{exec.name}"/>
-			<replace file="${dest.dir}/bin/sh/@{dest.file}.sh" token="##JAVA_MAIN_CLASS##" value="@{exec.name}"/>
-			<replace file="${dest.dir}/bin/sh/@{dest.file}.sh" token="##RUN_SCRIPT##" value="sh/run.sh"/>
-			<replace file="${dest.dir}/bin/sh/@{dest.file}.sh" token="##DEMO_VAR##" value="${DEMO_HOME}"/>
-			<replace file="${dest.dir}/bin/sh/@{dest.file}.sh" token="##JAVA_CP_SEP##" value=":"/>
+			<copy file="${template.dir}/@{template.file.bat}.tpl" tofile="@{demo.dir}/bin/bat/@{dest.file}.bat" />	
+			<replace file="@{demo.dir}/bin/bat/@{dest.file}.bat" token="##DEMO_HOME##" value="@{demo.dir.dos}"/>
+			<replace file="@{demo.dir}/bin/bat/@{dest.file}.bat" token="##EXEC_NAME##" value="@{exec.name}"/>
+			<replace file="@{demo.dir}/bin/bat/@{dest.file}.bat" token="##JAVA_MAIN_CLASS##" value="@{exec.name}"/>
+			<replace file="@{demo.dir}/bin/bat/@{dest.file}.bat" token="##RUN_SCRIPT##" value="bat\run.bat"/>
+			<replace file="@{demo.dir}/bin/bat/@{dest.file}.bat" token="##DEMO_VAR##" value="%DEMO_HOME%"/>
+			<replace file="@{demo.dir}/bin/bat/@{dest.file}.bat" token="##JAVA_CP_SEP##" value=";"/>
 
-			<copy file="${template.dir}/@{template.file.sh}.tpl" tofile="${dest.dir}/bin/cyg/@{dest.file}.sh" />
-			<replace file="${dest.dir}/bin/cyg/@{dest.file}.sh" token="##DEMO_HOME##" value="${demo.dir.dos}"/>
-			<replace file="${dest.dir}/bin/cyg/@{dest.file}.sh" token="##EXEC_NAME##" value="@{exec.name}"/>
-			<replace file="${dest.dir}/bin/cyg/@{dest.file}.sh" token="##JAVA_MAIN_CLASS##" value="@{exec.name}"/>
-			<replace file="${dest.dir}/bin/cyg/@{dest.file}.sh" token="##RUN_SCRIPT##" value="cyg/run.sh"/>
-			<replace file="${dest.dir}/bin/cyg/@{dest.file}.sh" token="##DEMO_VAR##" value="${DEMO_HOME}"/>
-			<replace file="${dest.dir}/bin/cyg/@{dest.file}.sh" token="##JAVA_CP_SEP##" value=";"/>
-			<replace file="${dest.dir}/bin/cyg/@{dest.file}.sh" token="${DEMO_HOME}/bin/sh/" value="${DEMO_HOME}/bin/cyg/"/>
+			<copy file="${template.dir}/@{template.file.sh}.tpl" tofile="@{demo.dir}/bin/sh/@{dest.file}.sh" />
+			<replace file="@{demo.dir}/bin/sh/@{dest.file}.sh" token="##DEMO_HOME##" value="@{demo.dir.cyg}"/>
+			<replace file="@{demo.dir}/bin/sh/@{dest.file}.sh" token="##EXEC_NAME##" value="@{exec.name}"/>
+			<replace file="@{demo.dir}/bin/sh/@{dest.file}.sh" token="##JAVA_MAIN_CLASS##" value="@{exec.name}"/>
+			<replace file="@{demo.dir}/bin/sh/@{dest.file}.sh" token="##RUN_SCRIPT##" value="sh/run.sh"/>
+			<replace file="@{demo.dir}/bin/sh/@{dest.file}.sh" token="##DEMO_VAR##" value="${DEMO_HOME}"/>
+			<replace file="@{demo.dir}/bin/sh/@{dest.file}.sh" token="##JAVA_CP_SEP##" value=":"/>
+
+			<copy file="${template.dir}/@{template.file.sh}.tpl" tofile="@{demo.dir}/bin/cyg/@{dest.file}.sh" />
+			<replace file="@{demo.dir}/bin/cyg/@{dest.file}.sh" token="##DEMO_HOME##" value="@{demo.dir.dos}"/>
+			<replace file="@{demo.dir}/bin/cyg/@{dest.file}.sh" token="##EXEC_NAME##" value="@{exec.name}"/>
+			<replace file="@{demo.dir}/bin/cyg/@{dest.file}.sh" token="##JAVA_MAIN_CLASS##" value="@{exec.name}"/>
+			<replace file="@{demo.dir}/bin/cyg/@{dest.file}.sh" token="##RUN_SCRIPT##" value="cyg/run.sh"/>
+			<replace file="@{demo.dir}/bin/cyg/@{dest.file}.sh" token="##DEMO_VAR##" value="${DEMO_HOME}"/>
+			<replace file="@{demo.dir}/bin/cyg/@{dest.file}.sh" token="##JAVA_CP_SEP##" value=";"/>
+			<replace file="@{demo.dir}/bin/cyg/@{dest.file}.sh" token="${DEMO_HOME}/bin/sh/" value="${DEMO_HOME}/bin/cyg/"/>
 		</sequential>
 	</macrodef>
 </project>

@@ -1,37 +1,62 @@
 #!/bin/bash
 
-#programme name, used to echos
+
+
+##
+## Change the following variables to you settings
+##
+
+# Default groupId
+group_id="skb"
+
+# Project name for printouts
+project_name="SKB"
+
+# Project demo directory
+dir_project_demo_abs="all-demos"
+dir_project_demo="../$dir_project_demo_abs"
+
+
+
+##
+## Don't change anything below unless you know what you are doing :)
+##
+
+# Programme name, used to echos
 prog_name=`basename $0`
 
-#target directory
+# Underlying system
+system=`uname -o`
+
+# Target directory
 dir_target="target"
 
-#defined modules taken from the module directory
+# Defined modules taken from the module directory
 defined_modules=`ls modules/*.settings | sed -e 's/modules\///' -e 's/\.settings//'`
 
-#defined tasks as per functions in this script
-defined_tasks="prepare-files test-files create-pom process-asciidoc set-versions create-demo-templates deploy-demos"
+# Defined tasks as per functions in this script
+defined_tasks="prepare-files test-files create-pom process-asciidoc set-versions create-demo-templates deploy-demo"
 
-#version file with BASH variable exports
+# Version file with BASH variable exports
 fn_version_bash="$dir_target/version.bash"
 
-#version file in ANT/MAVEN property style
+# Version file in ANT/MAVEN property style
 fn_version_ant="$dir_target/version.ant"
 
-#unset file for bash
+# Unset file for bash
 fn_bash_unset="$dir_target/unset.bash"
 
-#Module ANT file
-fn_module_ant="build.xml"
+# Directory with POM artifacts
+dir_pom_artifacts="pom-artifacts/"
 
 
 
-#
-# Help screen and exit condition (i.e. too few arguments)
-#
+##
+## Help screen and exit condition (i.e. too few arguments)
+##
 Help()
 {
-	echo "$prog_name - prepares SKB modules for deployment"
+	echo "$prog_name - prepares $project_name modules for deployment"
 	echo "       Usage:  $prog_name [-options] [task] [module]"
 	echo "         - use <-m module> and <-t task>"
 	echo "         - use -ma plus <-t task>"
@@ -40,10 +65,10 @@ Help()
 	echo ""
 	echo "       Options"
 	echo "       -ma    - process all defined modules"
-	echo "       -ta    - process all defined tasks"
+	echo "       -ta    - process all defined tasks (results might not be what you expect!)"
 	echo "       -h     - this help screen"
 	echo "       -S     - silent mode, do not output anything except errors"
-	echo "       -c     - clean up, remove all generated files"
+	echo "       -c     - clean up, remove most generated directories / files ($dir_project_demo, $dir_target)"
 	echo ""
 	echo "       Defined tasks:"
 	for task in $defined_tasks
@@ -67,11 +92,11 @@ fi
 
 
 
-#
-#Process CLI and set processing parameters
-# - we process all CLI options before going any further
-# - we exit programme if CLI options are amigious (we don't want a wiered machine!)
-#
+##
+## Process CLI and set processing parameters
+## - we process all CLI options before going any further
+## - we exit programme if CLI options are amigious (we don't want a wiered machine!)
+##
 all_modules=false
 all_tasks=false
 cli_module=
@@ -81,7 +106,7 @@ while [ $# -gt 0 ]
 do
 	case $1 in
 		#-c cleans up
-		-c)		rm -fr $dir_target;exit 255;;
+		-c)		rm -fr $dir_target;rm -fr $dir_project_demo;exit 255;;
 
 		#-h prints help and exists
 		-h)		Help;exit 255;;
@@ -144,9 +169,9 @@ do
 	esac
 done
 
-#now check if we have modules and tasks to process and if they are valid
+## now check if we have modules and tasks to process and if they are valid
 
-#start with modules
+## start with modules
 todo_modules=
 if [ $all_modules == true ]; then
 	#case 1: all_modules is true
@@ -169,7 +194,7 @@ else
 	fi
 fi
 
-#next is tasks
+## next is tasks
 todo_tasks=
 if [ $all_tasks == true ]; then
 	#case 1: all_tasks is true
@@ -194,9 +219,9 @@ fi
 
 
 
-#
-#Function to echo messages, except when in silent mode
-#
+##
+## Function to echo messages, except when in silent mode
+##
 PrintMessage()
 {
 	if [ $progmod_silent == false ]; then
@@ -210,15 +235,15 @@ PrintMessage()
 
 
 
-#now we have a list of modules and tasks in the todo_ variables, minimum length is 1
+## now we have a list of modules and tasks in the todo_ variables, minimum length is 1
 PrintMessage $prog_name "processing modules: $todo_modules"
 PrintMessage $prog_name "processing tasks:   $todo_tasks"
 
 
 
-#
-#Prepare the infrastructure, general plus module specific
-#
+##
+## Prepare the infrastructure, general plus module specific
+##
 prepare-files()
 {
 	if [ ! -d $dir_target ]; then
@@ -237,22 +262,22 @@ prepare-files()
 		touch $fn_bash_unset
 	fi
 
-	#read settings for module and then create a BASH file for that
-	fn_in=modules/$1.settings
-	fn_out=$dir_target/$1.bash
+	# read settings for module and then create a BASH file for that
+	local fn_in=modules/$1.settings
+	local fn_out=$dir_target/$1.bash
 	echo "" > $fn_out
-	#read variables are all variables from all files, so that we can create an unset file
+	# read variables are all variables from all files, so that we can create an unset file
 	while IFS='
 	' read line
 	do
 		if [[ ! $line == \#* ]] && [[ ! ${#line} == 0 ]] ; then
-			#set the general variable using the settings file
+			# set the general variable using the settings file
 			VAR_NAME=`echo $line | sed -e 's/=.*//' | sed -e 's/\./_/g'`
 			VAR_VAL=`echo $line | sed -e 's/^[^=]*=//'`
 			echo "export ${VAR_NAME}=\"${VAR_VAL}\"" >> $fn_out
 			echo "unset -v ${VAR_NAME}" >> $fn_bash_unset
 
-			#if the setting is about the artifact name, then set BASH formattings for that
+			# if the setting is about the artifact name, then set BASH formattings for that
 			if [[ $line == "skb.module.artifact="* ]] ; then
 				VAR_ARTIFACT_BASH="`echo $line | sed -e 's/^[^=]*=//' | sed -e 's/\./_/g'`_version"
 				echo "export artifact_version_bash=\"${VAR_ARTIFACT_BASH}\"" >> $fn_out
@@ -261,14 +286,14 @@ prepare-files()
 		fi
 	done < $fn_in
 
-	#source that created bash file for version processing
+	# source that created bash file for version processing
 	source $fn_out
 
-	#new create version information
-	#first, process the ANT file
+	# new create version information
+	# first, process the ANT file
 	if grep -q $skb_module_artifact "$fn_version_ant"; then
-		#ok, the version is already in there, replace
-		fn_tmp=$fn_version_ant.tmp
+		# ok, the version is already in there, replace
+		local fn_tmp=$fn_version_ant.tmp
 		touch $fn_tmp
 		while IFS='
 		' read line
@@ -281,14 +306,14 @@ prepare-files()
 		done < $fn_version_ant
 		mv $fn_tmp $fn_version_ant
 	else
-		#version not in there yet, add
+		# version not in there yet, add
 		echo "$skb_module_artifact=$skb_module_version" >> $fn_version_ant
 	fi
 
-	#next, process the BASH file
+	# next, process the BASH file
 	if grep -q "export $artifact_version_bash" "$fn_version_bash"; then
-		#ok, the version is already in there, replace
-		fn_tmp=$fn_version_bash.tmp
+		# ok, the version is already in there, replace
+		local fn_tmp=$fn_version_bash.tmp
 		touch $fn_tmp
 		while IFS='
 		' read line
@@ -302,12 +327,12 @@ prepare-files()
 		done < $fn_version_bash
 		mv $fn_tmp $fn_version_bash
 	else
-		#version not in there yet, add
+		# version not in there yet, add
 		echo "export $artifact_version_bash=$skb_module_version" >> $fn_version_bash
 		echo "unset -v $artifact_version_bash" >> $fn_bash_unset
 	fi
 
-	#finally remove duplicates from the unset file
+	# finally remove duplicates from the unset file
 	sort $fn_bash_unset | uniq -d > $fn_bash_unset.tmp
 	sort $fn_bash_unset | uniq -u >> $fn_bash_unset.tmp
 	mv $fn_bash_unset.tmp $fn_bash_unset
@@ -315,9 +340,9 @@ prepare-files()
 
 
 
-#
-#Test the infrastructure, general and module specific
-#
+##
+## Test the infrastructure, general and module specific
+##
 test-files()
 {
 	if [ ! -d $dir_target ]; then
@@ -342,12 +367,12 @@ test-files()
 
 
 
-#
-#process a modules standard ASCIIDOC files
-#
+##
+## Process a modules standard ASCIIDOC files
+##
 process-asciidoc()
 {
-	ad_files="CHANGELOG.asciidoc README.asciidoc"
+	local ad_files="CHANGELOG.asciidoc README.asciidoc"
 	for file in $ad_files
 	do
 		(cd ../$skb_module_directory; asciidoc $file)
@@ -355,29 +380,27 @@ process-asciidoc()
 }
 
 
-
-#
-#create a POM. Use $1 as the tmp file name
-#
+##
+## Create a POM. Use $1 as the tmp file name
+##
 create-pom()
 {
 	source $fn_version_bash
 
-	pom_artifacts_dir="pom-artifacts/"
-	file_extension=".pom.xml"
-	gen_directory=$dir_target/generated-poms
+	local file_extension=".pom.xml"
+	local gen_directory=$dir_target/generated-poms
 	if [ ! -d $gen_directory ]; then
 		mkdir $gen_directory
 	fi
 
-	out_fn_fqpn=$gen_directory/$1$file_extension
+	local out_fn_fqpn=$gen_directory/$1$file_extension
 	echo -n "" > $out_fn_fqpn
 
-	pom_fn_fqpn=../$skb_module_directory/pom.xml
+	local pom_fn_fqpn=../$skb_module_directory/pom.xml
 
-	cat $pom_artifacts_dir/project-open.xml >> $out_fn_fqpn
-		cat $pom_artifacts_dir/modelVersion.xml >> $out_fn_fqpn
-		echo "	<groupId>de.vandermeer</groupId>" >> $out_fn_fqpn
+	cat $dir_pom_artifacts/project-open.xml >> $out_fn_fqpn
+		cat $dir_pom_artifacts/modelVersion.xml >> $out_fn_fqpn
+		echo "	<groupId>$group_id</groupId>" >> $out_fn_fqpn
 		echo "	<artifactId>$skb_module_artifact</artifactId>" >> $out_fn_fqpn
 		echo "	<version>$skb_module_version</version>" >> $out_fn_fqpn
 		echo "" >> $out_fn_fqpn
@@ -395,14 +418,14 @@ create-pom()
 			echo "		<project.resources.sourceEncoding>$skb_module_properties_encoding</project.resources.sourceEncoding>" >> $out_fn_fqpn
 			echo "		<encoding>$skb_module_properties_encoding</encoding>" >> $out_fn_fqpn
 			echo "		<file.encoding>$skb_module_properties_encoding</file.encoding>" >> $out_fn_fqpn
-			cat $pom_artifacts_dir/properties.xml >> $out_fn_fqpn
+			cat $dir_pom_artifacts/properties.xml >> $out_fn_fqpn
 		echo "	</properties>" >> $out_fn_fqpn
 		echo "" >> $out_fn_fqpn
 
-		cat $pom_artifacts_dir/licence.xml >> $out_fn_fqpn
+		cat $dir_pom_artifacts/licence.xml >> $out_fn_fqpn
 		echo "" >> $out_fn_fqpn
 
-		cat $pom_artifacts_dir/prerequisites.xml >> $out_fn_fqpn
+		cat $dir_pom_artifacts/prerequisites.xml >> $out_fn_fqpn
 		echo "" >> $out_fn_fqpn
 
 		echo "	<scm>" >> $out_fn_fqpn
@@ -425,33 +448,38 @@ create-pom()
 				_v=`echo $intdep | sed -e 's/\./_/g'`_version
 				settings_fn=modules/$intdep.settings
 				echo "		<dependency>" >> $out_fn_fqpn
-				echo "			<groupId>de.vandermeer</groupId>" >> $out_fn_fqpn
+				echo "			<groupId>$group_id</groupId>" >> $out_fn_fqpn
 				echo "			<artifactId>$intdep</artifactId>" >> $out_fn_fqpn
 				echo "			<version>${!_v}</version>" >> $out_fn_fqpn
 				echo "		</dependency>" >> $out_fn_fqpn
 			done
-			cat modules/$1-dependencies.xml >> $out_fn_fqpn
+			if [ -f modules/$1-dependencies.xml ] ; then
+				cat modules/$1-dependencies.xml >> $out_fn_fqpn
+			fi
 		echo "	</dependencies>" >> $out_fn_fqpn
 		echo "" >> $out_fn_fqpn
 
 		echo "	<build>" >> $out_fn_fqpn
 		echo "		<plugins>" >> $out_fn_fqpn
+		if [ -f modules/$1-plugins.xml ] ; then
+			cat modules/$1-plugins.xml >> $out_fn_fqpn
+		fi
 		cat pom-artifacts/plugin-compiler.xml >> $out_fn_fqpn
 		cat pom-artifacts/plugin-javadoc.xml >> $out_fn_fqpn
 		cat pom-artifacts/plugin-dependency.xml >> $out_fn_fqpn
 		echo "		</plugins>" >> $out_fn_fqpn
 		echo "	</build>" >> $out_fn_fqpn
 
-	cat $pom_artifacts_dir/project-close.xml >> $out_fn_fqpn
+	cat $dir_pom_artifacts/project-close.xml >> $out_fn_fqpn
 
 	cat $out_fn_fqpn > $pom_fn_fqpn
 }
 
 
 
-#
-#Sets versions of some file types using ANT
-#
+##
+## Sets versions of some file types using ANT
+##
 set-versions()
 {
 	ant -S -f ant-macros/set-versions.build.xml  -DmoduleFile=../modules/$1.settings
@@ -459,22 +487,21 @@ set-versions()
 
 
 
-#
-#Creates template files for demo scripts
-#
+##
+## Creates template files for demo scripts
+##
 create-demo-templates()
 {
-	tpl_dir="../$skb_module_directory/src/demo"
+	local module_demo_dir="../$skb_module_directory/src/demo"
+	local tpl_dir="../$skb_module_directory/src/demo/templates"
+	local tpl_local_dir="../$skb_module_directory/src/demo/templates-local"
 
-	if [[ -d ../$skb_module_directory/target/lib/ ]] && [[ -f ../$skb_module_directory/$fn_module_ant ]] ; then
+	if [[ -d ../$skb_module_directory/target/lib/ ]] && [[ -f ../$skb_module_directory/deploy-demo.xml ]] && [[ -d $module_demo_dir ]] ; then
 		if [ ! -d $tpl_dir ]; then
 			mkdir $tpl_dir
 		fi
-		cp ant-macros/demo-script.macro.xml $tpl_dir
 
-		##
-		##Generate JAVA ClassPath
-		##
+		## Generate JAVA ClassPath
 		CP_ALL=
 		for i in `ls ../$skb_module_directory/target/lib/`
 		do
@@ -492,12 +519,10 @@ create-demo-templates()
 		CP_JAVA=`echo "##DEMO_VAR##/etc##JAVA_CP_SEP####DEMO_VAR##/data##JAVA_CP_SEP####DEMO_VAR##/scripts${CP_ALL}${CP_SELF}"`
 
 
-		##
-		##BATCH/DOS
-		##
-		fn_bat_head_tpl="$tpl_dir/bat-head.tpl"
-		fn_bat_exec_tpl="$tpl_dir/bat-exec.tpl"
-		fn_bat_java_tpl="$tpl_dir/bat-java.tpl"
+		## BATCH/DOS
+		local fn_bat_head_tpl="$tpl_dir/bat-head.tpl"
+		local fn_bat_exec_tpl="$tpl_dir/bat-exec.tpl"
+		local fn_bat_java_tpl="$tpl_dir/bat-java.tpl"
 		echo "@echo off" > $fn_bat_head_tpl
 		echo "" >> $fn_bat_head_tpl
 		echo "REM --> change DEMO_HOME to the root path of the demo" >> $fn_bat_head_tpl
@@ -513,12 +538,10 @@ create-demo-templates()
 		echo "" >> $fn_bat_java_tpl
 
 
-		##
-		##SH (UNIX / LINUX / CYGWIN)
-		##
-		fn_sh_head_tpl="$tpl_dir/sh-head.tpl"
-		fn_sh_exec_tpl="$tpl_dir/sh-exec.tpl"
-		fn_sh_java_tpl="$tpl_dir/sh-java.tpl"
+		## SH (UNIX / LINUX / CYGWIN)
+		local fn_sh_head_tpl="$tpl_dir/sh-head.tpl"
+		local fn_sh_exec_tpl="$tpl_dir/sh-exec.tpl"
+		local fn_sh_java_tpl="$tpl_dir/sh-java.tpl"
 		echo "#!/bin/bash" > $fn_sh_head_tpl
 		echo "" >> $fn_sh_head_tpl
 		echo "# --> change DEMO_HOME to the root path of the demo" >> $fn_sh_head_tpl
@@ -533,61 +556,65 @@ create-demo-templates()
 		echo "java -Dfile.encoding=UTF-8 -classpath \"${CP_JAVA}\" ##JAVA_MAIN_CLASS## \$*" >> $fn_sh_java_tpl
 		echo "" >> $fn_sh_java_tpl
 
+		## Create local templates
+		if [ -d $tpl_local_dir ] ; then
+			for bat in `ls $tpl_local_dir | grep .bat.tpl`
+			do
+				cat $fn_bat_head_tpl > $tpl_dir/local-$bat
+				cat $tpl_local_dir/$bat >> $tpl_dir/local-$bat
+			done
+			for sh in `ls $tpl_local_dir | grep sh.tpl`
+			do
+				cat $fn_sh_head_tpl > $tpl_dir/local-$sh
+				cat $tpl_local_dir/$sh >> $tpl_dir/local-$sh
+			done
+		fi
+
+		## Copy ANT file and create ANT settings file
+		cp ant-macros/demo-script.macro.xml $module_demo_dir
+
+		local fn_bash_deploy_demo="../$skb_module_directory/deploy-demo"
+		cat sh-artifacts/deploy-demos.txt > $fn_bash_deploy_demo
+		echo "ant -f deploy-demo.xml" >> $fn_bash_deploy_demo
+
+		local fn_ant_settings=$module_demo_dir/demo-script.settings
+		echo > $fn_ant_settings
+		echo "skb.module.artifact=$skb_module_artifact" >> $fn_ant_settings
+		echo "skb.module.version=$skb_module_version" >> $fn_ant_settings
+		echo "template.dir=src/demo/templates" >> $fn_ant_settings
+		echo "demo.dir.abs=$dir_project_demo_abs" >> $fn_ant_settings
 	else
-		if [ ! -f ../$skb_module_directory/$fn_module_ant ] ; then
+		if [ ! -f ../$skb_module_directory/deploy-demo.xml ] ; then
 			PrintMessage "------> no ant file, nothing to do"
 		fi
 		if [ ! -d ../$skb_module_directory/target/lib/ ] ; then
-			PrintMessage "------> no lib directory found in module $1, try mvn $1"
+			PrintMessage "------> no lib directory found in module $1, try 'mvn $1'"
+		fi
+		if [ ! -d $module_demo_dir ] ; then
+			PrintMessage "------> no demo directory found for module $1, try 'mkdir $module_demo_dir'"
 		fi
 	fi
 }
 
 
 
-#
-#Deploy demos
-#
-deploy-demos()
+##
+## Deploy demo
+##
+deploy-demo()
 {
-	tpl_dir="../$skb_module_directory/src/demo"
-
-	if [[ -d ../$skb_module_directory/target/lib/ ]] && [[ -f ../$skb_module_directory/$fn_module_ant ]] ; then
-		##Generate directories from current one
-		dir_prj_home=`(cd ..;pwd)`
-		system=`uname -o`
-		if [ "$system" == "Cygwin" ] ; then
-			PROJECT_HOME="/"`echo $dir_prj_home | cut -d/ -f4-`
-			PROJECT_HOME_CYG=${dir_prj_home}
-			PROJECT_HOME_DOS=`cygpath -m ${dir_prj_home}`
-		else
-			PROJECT_HOME=${dir_prj_home}
-			PROJECT_HOME_CYG=${dir_prj_home}
-			PROJECT_HOME_DOS=${dir_prj_home}
-		fi
-
-		(cd ../$skb_module_directory; ant -Dskb.module.artifact=$skb_module_artifact -Dskb.module.version=$skb_module_version -DPROJECT_HOME=$PROJECT_HOME -DPROJECT_HOME_CYG=$PROJECT_HOME_CYG -DPROJECT_HOME_DOS=$PROJECT_HOME_DOS)
-
-		unset dir_prj_home
-		unset system
-		unset PROJECT_HOME
-		unset PROJECT_HOME_CYG
-		unset PROJECT_HOME_DOS
+	if [ -f "../$skb_module_directory/deploy-demo" ] ; then
+		(cd ../$skb_module_directory; bash deploy-demo)
 	else
-		if [ ! -f ../$skb_module_directory/$fn_module_ant ] ; then
-			PrintMessage "------> no ant file, nothing to do"
-		fi
-		if [ ! -d ../$skb_module_directory/target/lib/ ] ; then
-			PrintMessage "------> no lib directory found in module $1, try mvn $1"
-		fi
+		PrintMessage "------> no script for deploying demos"
 	fi
 }
 
 
 
-#
-#Source files requried to process tasks for modules
-#
+##
+## Source files requried to process tasks for modules
+##
 SourceFiles()
 {
 	source $fn_version_bash >& /dev/null
@@ -597,6 +624,9 @@ SourceFiles()
 
 
 
+##
+## Run the selected task(s) for the selected module(s)
+##
 for mod in $todo_modules
 do
 	PrintMessage "--> <$mod>"
@@ -607,11 +637,4 @@ do
 		$task $mod
 	done
 done
-exit 255;
-
-
-#for mod in $defined_modules
-#do
-#	echo "ant -S -f ant-macros/version.build.xml  -DmoduleFile=../modules/$mod.settings"
-#done
-
+exit 0;

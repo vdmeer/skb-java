@@ -1,0 +1,13 @@
+#!/bin/bash
+system=`uname -o`
+dir_project_home_abs=`(cd ..;pwd)`
+if [ "$system" == "Cygwin" ] ; then
+	export DIR_PROJECT_HOME="/"`echo $dir_project_home_abs | cut -d/ -f4-`
+	export DIR_PROJECT_HOME_CYG=${dir_project_home_abs}
+	export DIR_PROJECT_HOME_DOS=`cygpath -m ${dir_project_home_abs}`
+else
+	export DIR_PROJECT_HOME=${dir_project_home_abs}
+	export DIR_PROJECT_HOME_CYG=${dir_project_home_abs}
+	export DIR_PROJECT_HOME_DOS=${dir_project_home_abs}
+fi
+
