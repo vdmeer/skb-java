@@ -1,16 +1,35 @@
 #!/bin/bash
 
+## Copyright 2014-2014 Sven van der Meer <vdmeer.sven@mykolab.com>
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+## 
+##     http://www.apache.org/licenses/LICENSE-2.0
+## 
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+
+##
+## Shell script to automate build and deployment of maven projects.
+##
+## @package    de.vandermeer.skb
+## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
+## @copyright  2014-2014 Sven van der Meer
+## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
+## @version    v0.0.3-SNAPSHOT build 141210 (10-Dec-14)
+##
+
 
 
 ##
 ## Change the following variables to you settings
 ##
-
-# Default groupId
-group_id="sahara"
-
-# Project name for printouts
-project_name="SAHARA"
 
 # Project demo directory
 dir_project_demo_abs="all-demos"
@@ -22,11 +41,11 @@ dir_project_demo="../$dir_project_demo_abs"
 ## Don't change anything below unless you know what you are doing :)
 ##
 
+# Project name for printouts
+project_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
+
 # Programme name, used to echos
 prog_name=`basename $0`
-
-# Underlying system
-system=`uname -o`
 
 # Target directory
 dir_target="target"
@@ -35,7 +54,7 @@ dir_target="target"
 defined_modules=`ls modules/*.settings | sed -e 's/modules\///' -e 's/\.settings//'`
 
 # Defined tasks as per functions in this script
-defined_tasks="prepare-files test-files create-pom process-asciidoc set-versions create-demo-templates deploy-demo"
+defined_tasks="prepare-files test-files create-pom set-versions create-demo-templates deploy-demo"
 
 # Version file with BASH variable exports
 fn_version_bash="$dir_target/version.bash"
@@ -372,19 +391,6 @@ test-files()
 
 
 ##
-## Process a modules standard ASCIIDOC files
-##
-process-asciidoc()
-{
-	local ad_files="CHANGELOG.asciidoc README.asciidoc"
-	for file in $ad_files
-	do
-		(cd ../$skb_module_directory; asciidoc $file)
-	done
-}
-
-
-##
 ## Create a POM. Use $1 as the tmp file name
 ##
 create-pom()
@@ -404,7 +410,8 @@ create-pom()
 
 	cat $dir_pom_artifacts/project-open.xml >> $out_fn_fqpn
 		cat $dir_pom_artifacts/modelVersion.xml >> $out_fn_fqpn
-		echo "	<groupId>$group_id</groupId>" >> $out_fn_fqpn
+		echo -n "	" >> $out_fn_fqpn
+		cat $dir_pom_artifacts/groupId.xml >> $out_fn_fqpn
 		echo "	<artifactId>$skb_module_artifact</artifactId>" >> $out_fn_fqpn
 		echo "	<version>$skb_module_version</version>" >> $out_fn_fqpn
 		echo "" >> $out_fn_fqpn
@@ -452,7 +459,8 @@ create-pom()
 				_v=`echo $intdep | sed -e 's/\./_/g'`_version
 				settings_fn=modules/$intdep.settings
 				echo "		<dependency>" >> $out_fn_fqpn
-				echo "			<groupId>$group_id</groupId>" >> $out_fn_fqpn
+				echo -n "			" >> $out_fn_fqpn
+				cat $dir_pom_artifacts/groupId.xml >> $out_fn_fqpn
 				echo "			<artifactId>$intdep</artifactId>" >> $out_fn_fqpn
 				echo "			<version>${!_v}</version>" >> $out_fn_fqpn
 				echo "		</dependency>" >> $out_fn_fqpn
