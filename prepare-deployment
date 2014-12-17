@@ -7,10 +7,10 @@
 ##
 
 # Default groupId
-group_id="skb"
+group_id="sahara"
 
 # Project name for printouts
-project_name="SKB"
+project_name="SAHARA"
 
 # Project demo directory
 dir_project_demo_abs="all-demos"
@@ -68,7 +68,8 @@ Help()
 	echo "       -ta    - process all defined tasks (results might not be what you expect!)"
 	echo "       -h     - this help screen"
 	echo "       -S     - silent mode, do not output anything except errors"
-	echo "       -c     - clean up, remove most generated directories / files ($dir_project_demo, $dir_target)"
+	echo "       -c     - clean up, remove most generated directories / files ($dir_target)"
+	echo "       -cD    - clean up, remove demo directory ($dir_project_demo)"
 	echo ""
 	echo "       Defined tasks:"
 	for task in $defined_tasks
@@ -106,7 +107,10 @@ while [ $# -gt 0 ]
 do
 	case $1 in
 		#-c cleans up
-		-c)		rm -fr $dir_target;rm -fr $dir_project_demo;exit 255;;
+		-c)		rm -fr $dir_target;exit 255;;
+
+		#-cD cleans up
+		-cD)	rm -fr $dir_project_demo;exit 255;;
 
 		#-h prints help and exists
 		-h)		Help;exit 255;;
