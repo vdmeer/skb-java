@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 ## Copyright 2014-2014 Sven van der Meer <vdmeer.sven@mykolab.com>
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
@@ -259,8 +260,8 @@ PrintMessage()
 
 
 ## now we have a list of modules and tasks in the todo_ variables, minimum length is 1
-PrintMessage $prog_name "processing modules: $todo_modules"
-PrintMessage $prog_name "processing tasks:   $todo_tasks"
+#PrintMessage $prog_name "processing modules: $todo_modules"
+#PrintMessage $prog_name "processing tasks:   $todo_tasks"
 
 
 
@@ -289,28 +290,19 @@ prepare-files()
 	local fn_in=modules/$1.settings
 	local fn_out=$dir_target/$1.bash
 	echo "" > $fn_out
-	# read variables are all variables from all files, so that we can create an unset file
-	while IFS='
-	' read line
-	do
-		if [[ ! $line == \#* ]] && [[ ! ${#line} == 0 ]] ; then
-			# set the general variable using the settings file
-			VAR_NAME=`echo $line | sed -e 's/=.*//' | sed -e 's/\./_/g'`
-			VAR_VAL=`echo $line | sed -e 's/^[^=]*=//'`
-			echo "export ${VAR_NAME}=\"${VAR_VAL}\"" >> $fn_out
-			echo "unset -v ${VAR_NAME}" >> $fn_bash_unset
 
-			# if the setting is about the artifact name, then set BASH formattings for that
-			if [[ $line == "skb.module.artifact="* ]] ; then
-				VAR_ARTIFACT_BASH="`echo $line | sed -e 's/^[^=]*=//' | sed -e 's/\./_/g'`_version"
-				echo "export artifact_version_bash=\"${VAR_ARTIFACT_BASH}\"" >> $fn_out
-				echo "unset -v artifact_version_bash" >> $fn_bash_unset
-			fi
-		fi
-	done < $fn_in
+	# read settings file and create bash sourceable file
+	`cat $fn_in | sed -e ':b; s/^\([^=]*\)*\./\1_/; tb;' -e 's/=/=\"/' -e 's/$/\"/' -e 's/^/export /' > $fn_out`
+	# read settings and create a bash unset file
+	`cat $fn_in | sed -e 's/=.*//' -e 's/\./_/g' -e 's/^/unset -v /' -e 's/$//' > $fn_bash_unset`
 
 	# source that created bash file for version processing
 	source $fn_out
+	# for the artifact name set BASH formattings
+	artifact_version_bash="`echo $skb_module_artifact | sed -e 's/\./_/g'`_version"
+	# and add that to the bash files created
+	echo "export artifact_version_bash=\"${artifact_version_bash}\"" >> $fn_out
+	echo "unset -v artifact_version_bash" >> $fn_bash_unset
 
 	# new create version information
 	# first, process the ANT file
@@ -318,15 +310,7 @@ prepare-files()
 		# ok, the version is already in there, replace
 		local fn_tmp=$fn_version_ant.tmp
 		touch $fn_tmp
-		while IFS='
-		' read line
-		do
-			if [[ $line == "$skb_module_artifact="* ]] ; then
-				echo "$skb_module_artifact=$skb_module_version" >> $fn_tmp
-			else
-				echo "$line" >> $fn_tmp
-			fi
-		done < $fn_version_ant
+		`cat $fn_version_ant | sed -e 's/^'$skb_module_artifact'.*$/'$skb_module_artifact'='$skb_module_version'/' > $fn_tmp`
 		mv $fn_tmp $fn_version_ant
 	else
 		# version not in there yet, add
@@ -338,27 +322,13 @@ prepare-files()
 		# ok, the version is already in there, replace
 		local fn_tmp=$fn_version_bash.tmp
 		touch $fn_tmp
-		while IFS='
-		' read line
-		do
-			if [[ $line == "export $artifact_version_bash="* ]] ; then
-				echo "export $artifact_version_bash=$skb_module_version" >> $fn_tmp
-				echo "unset -v $artifact_version_bash" >> $fn_bash_unset
-			else
-				echo "$line" >> $fn_tmp
-			fi
-		done < $fn_version_bash
+		`cat $fn_version_bash | sed -e 's/^export '$artifact_version_bash'.*$/export '$artifact_version_bash'='$skb_module_version'/' > $fn_tmp`
 		mv $fn_tmp $fn_version_bash
 	else
 		# version not in there yet, add
 		echo "export $artifact_version_bash=$skb_module_version" >> $fn_version_bash
 		echo "unset -v $artifact_version_bash" >> $fn_bash_unset
 	fi
-
-	# finally remove duplicates from the unset file
-	sort $fn_bash_unset | uniq -d > $fn_bash_unset.tmp
-	sort $fn_bash_unset | uniq -u >> $fn_bash_unset.tmp
-	mv $fn_bash_unset.tmp $fn_bash_unset
 }
 
 
