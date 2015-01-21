@@ -88,8 +88,8 @@ Help()
 	echo "       -ta    - process all defined tasks (results might not be what you expect!)"
 	echo "       -h     - this help screen"
 	echo "       -S     - silent mode, do not output anything except errors"
-	echo "       -c     - clean up, remove most generated directories / files ($dir_target)"
-	echo "       -cD    - clean up, remove demo directory ($dir_project_demo)"
+	echo "       -c     - clean up: remove most generated directories / files ($dir_target)"
+	echo "       -cD    - clean up: remove demo directory ($dir_project_demo)"
 	echo ""
 	echo "       Defined tasks:"
 	for task in $defined_tasks
@@ -449,6 +449,7 @@ create-pom()
 		cat pom-artifacts/plugin-compiler.xml >> $out_fn_fqpn
 		cat pom-artifacts/plugin-javadoc.xml >> $out_fn_fqpn
 		cat pom-artifacts/plugin-dependency.xml >> $out_fn_fqpn
+		cat pom-artifacts/plugin-sourcejar.xml >> $out_fn_fqpn
 		echo "		</plugins>" >> $out_fn_fqpn
 		echo "	</build>" >> $out_fn_fqpn
 
