@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-## Copyright 2014-2014 Sven van der Meer <vdmeer.sven@mykolab.com>
+## Copyright 2014-2015 Sven van der Meer <vdmeer.sven@mykolab.com>
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@
 ##
 ## @package    de.vandermeer.skb
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
-## @copyright  2014-2014 Sven van der Meer
+## @copyright  2014-2015 Sven van der Meer
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
-## @version    v0.0.3-SNAPSHOT build 141210 (10-Dec-14)
+## @version    v0.0.4-SNAPSHOT build 140128 (28-Jan-15)
 ##
 
 
@@ -453,6 +453,12 @@ create-pom()
 		echo "		</plugins>" >> $out_fn_fqpn
 		echo "	</build>" >> $out_fn_fqpn
 
+		if [[ $skb_module_packaging && ${skb_module_packaging-_} ]]; then
+			echo "	<packaging>$skb_module_packaging</packaging>" >> $out_fn_fqpn
+		else
+			echo "	<packaging>jar</packaging>" >> $out_fn_fqpn
+		fi
+
 	cat $dir_pom_artifacts/project-close.xml >> $out_fn_fqpn
 
 	cat $out_fn_fqpn > $pom_fn_fqpn
@@ -465,7 +471,7 @@ create-pom()
 ##
 set-versions()
 {
-	ant -S -f ant-macros/set-versions.build.xml  -DmoduleFile=../modules/$1.settings
+	ant -S -f ant-macros/set-versions.build.xml -DmoduleFile=../modules/$1.settings
 }
 
 
