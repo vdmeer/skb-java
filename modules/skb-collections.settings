@@ -1,9 +1,9 @@
 skb.module.artifact=skb.collections
 skb.module.directory=collections
-skb.module.version=0.0.3-SNAPSHOT
+skb.module.version=0.0.3
 skb.module.name=SKB Collections
 skb.module.url=https://github.com/vdmeer/skb-java-collections
-skb.module.description=###
+skb.module.description=Strategies for Java collections
 skb.module.inceptionYear=2010
 skb.module.properties.compiler.source=1.8
 skb.module.properties.compiler.target=1.8
@@ -15,3 +15,4 @@ skb.module.scm.url=https://github.com/vdmeer/skb-java-collections
 skb.module.issueManagement.url=https://github.com/vdmeer/skb-java-collections/issues
 skb.module.issueManagement.system=github
 skb.module.internalDependencies=skb.base
+skb.module.packaging=

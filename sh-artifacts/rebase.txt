@@ -1,0 +1,38 @@
+#!/bin/bash
+
+system=`uname -o`
+dir_project_home_abs=`(cd ..;pwd)`
+
+if [ "$system" == "Cygwin" ] ; then
+	DIR_PROJECT_HOME="/"`echo $dir_project_home_abs | cut -d/ -f4-`
+	DIR_PROJECT_HOME_CYG=`cygpath -m ${dir_project_home_abs}`
+	DIR_PROJECT_HOME_DOS=`cygpath -m ${dir_project_home_abs}`
+else
+	DIR_PROJECT_HOME=${dir_project_home_abs}
+	#DIR_PROJECT_HOME_CYG=${dir_project_home_abs}
+	#DIR_PROJECT_HOME_DOS=${dir_project_home_abs}
+fi
+
+if [ "$DIR_PROJECT_HOME" != "" ]; then
+	echo "- rebasing sh folder"
+	for file in `ls sh`
+	do
+		sed -i 's|^DEMO_HOME=.*$|DEMO_HOME='$DIR_PROJECT_HOME'|' sh/$file
+	done
+fi
+
+if [ "$DIR_PROJECT_HOME_CYG" != "" ]; then
+	echo "- rebasing cyg folder"
+	for file in `ls cyg`
+	do
+		sed -i 's|^DEMO_HOME=.*$|DEMO_HOME='$DIR_PROJECT_HOME_CYG'|' cyg/$file
+	done
+fi
+
+if [ "$DIR_PROJECT_HOME_DOS" != "" ]; then
+	echo "- rebasing bat folder"
+	for file in `ls bat`
+	do
+		sed -i 's|^set DEMO_HOME=.*$|set DEMO_HOME='$DIR_PROJECT_HOME_DOS'|' bat/$file
+	done
+fi

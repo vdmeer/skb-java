@@ -4,7 +4,7 @@
 				<version>1.5.0</version>
 				<executions>
 					<execution>
-						<id>package-asciidoc</id><phase>generate-resources</phase>
+						<id>package-asciidoc</id><phase>package</phase>
 						<configuration>
 							<sourceDirectory>src/package/doc</sourceDirectory>
 							<outputDirectory>./</outputDirectory>

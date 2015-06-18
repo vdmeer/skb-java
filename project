@@ -409,6 +409,9 @@ create-pom()
 		cat $dir_pom_artifacts/prerequisites.xml >> $out_fn_fqpn
 		echo "" >> $out_fn_fqpn
 
+		cat $dir_pom_artifacts/distributionManagement.xml >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
 		echo "	<scm>" >> $out_fn_fqpn
 			echo "		<developerConnection>$skb_module_scm_developerConnection</developerConnection>" >> $out_fn_fqpn
 			echo "		<connection>$skb_module_scm_connection</connection>" >> $out_fn_fqpn
@@ -457,6 +460,10 @@ create-pom()
 			echo "	<packaging>$skb_module_packaging</packaging>" >> $out_fn_fqpn
 		else
 			echo "	<packaging>jar</packaging>" >> $out_fn_fqpn
+		fi
+
+		if [ -f modules/$1-profiles.xml ] ; then
+			cat modules/$1-profiles.xml >> $out_fn_fqpn
 		fi
 
 	cat $dir_pom_artifacts/project-close.xml >> $out_fn_fqpn

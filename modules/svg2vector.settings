@@ -14,3 +14,4 @@ skb.module.scm.tag=svg2vector-0.0.3
 skb.module.scm.url=https://github.com/vdmeer/svg2vector
 skb.module.issueManagement.url=https://github.com/vdmeer/svg2vector/issues
 skb.module.issueManagement.system=github
+skb.module.packaging=

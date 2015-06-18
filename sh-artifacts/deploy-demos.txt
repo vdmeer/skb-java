@@ -2,7 +2,11 @@
 system=`uname -o`
 dir_project_home_abs=`(cd ..;pwd)`
 if [ "$system" == "Cygwin" ] ; then
-	export DIR_PROJECT_HOME="/"`echo $dir_project_home_abs | cut -d/ -f4-`
+	if [[ $dir_project_home_abs == *"/cygdrive"* ]]; then
+		export DIR_PROJECT_HOME="/"`echo $dir_project_home_abs | cut -d/ -f4-`
+	else
+		export DIR_PROJECT_HOME=${dir_project_home_abs}
+	fi
 	export DIR_PROJECT_HOME_CYG=${dir_project_home_abs}
 	export DIR_PROJECT_HOME_DOS=`cygpath -m ${dir_project_home_abs}`
 else
@@ -10,4 +14,3 @@ else
 	export DIR_PROJECT_HOME_CYG=${dir_project_home_abs}
 	export DIR_PROJECT_HOME_DOS=${dir_project_home_abs}
 fi
-

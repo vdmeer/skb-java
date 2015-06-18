@@ -1,9 +1,9 @@
 skb.module.artifact=skb.categories
 skb.module.directory=categories
-skb.module.version=0.0.3-SNAPSHOT
+skb.module.version=0.0.3
 skb.module.name=SKB Categories
 skb.module.url=https://github.com/vdmeer/skb-java-categories
-skb.module.description=###
+skb.module.description=Set of interfaces to build a category hierarchy
 skb.module.inceptionYear=2010
 skb.module.properties.compiler.source=1.8
 skb.module.properties.compiler.target=1.8
@@ -15,3 +15,4 @@ skb.module.scm.url=https://github.com/vdmeer/skb-java-categories
 skb.module.issueManagement.url=https://github.com/vdmeer/skb-java-categories/issues
 skb.module.issueManagement.system=github
 skb.module.internalDependencies=skb.collections
+skb.module.packaging=

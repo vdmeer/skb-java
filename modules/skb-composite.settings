@@ -1,9 +1,9 @@
 skb.module.artifact=skb.composite
 skb.module.directory=composite
-skb.module.version=0.0.3-SNAPSHOT
+skb.module.version=0.0.3
 skb.module.name=SKB Composite
 skb.module.url=https://github.com/vdmeer/skb-java-composite
-skb.module.description=###
+skb.module.description=Composite base and Null Objects
 skb.module.inceptionYear=2010
 skb.module.properties.compiler.source=1.8
 skb.module.properties.compiler.target=1.8
@@ -15,3 +15,4 @@ skb.module.scm.url=https://github.com/vdmeer/skb-java-composite
 skb.module.issueManagement.url=https://github.com/vdmeer/skb-java-composite/issues
 skb.module.issueManagement.system=github
 skb.module.internalDependencies=skb.categories
+skb.module.packaging=
