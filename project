@@ -426,6 +426,20 @@ create-pom()
 		echo "	</issueManagement>" >> $out_fn_fqpn
 		echo "" >> $out_fn_fqpn
 
+		echo "	<developers>" >> $out_fn_fqpn
+			if [ -f modules/$1-developers.xml ] ; then
+				cat modules/$1-developers.xml >> $out_fn_fqpn
+			fi
+		echo "	</developers>" >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
+		echo "	<contributors>" >> $out_fn_fqpn
+			if [ -f modules/$1-contributors.xml ] ; then
+				cat modules/$1-contributors.xml >> $out_fn_fqpn
+			fi
+		echo "	</contributors>" >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
+
 		echo "	<dependencies>" >> $out_fn_fqpn
 			for intdep in $skb_module_internalDependencies
 			do
