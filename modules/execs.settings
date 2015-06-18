@@ -1,6 +1,6 @@
 skb.module.artifact=execs
 skb.module.directory=execs
-skb.module.version=0.0.3
+skb.module.version=0.0.4-SNAPSHOT
 skb.module.name=Execution Service
 skb.module.url=https://github.com/vdmeer/execs
 skb.module.description=A simple set of classes to execute programmes from the command line, without littering the code with static void main(String[] args). This package addresses the following problem: a package (or a set of packages) contain a number of tools that should be run from outside java, e.g. using a static main() method. Over time, it might (will) be hard to know (or find) all main methods.

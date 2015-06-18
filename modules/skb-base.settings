@@ -1,6 +1,6 @@
 skb.module.artifact=skb.base
 skb.module.directory=base
-skb.module.version=0.0.3
+skb.module.version=0.0.4-SNAPSHOT
 skb.module.name=SKB Base
 skb.module.url=https://github.com/vdmeer/skb-java-base
 skb.module.description=Base definitions, some standard classes and services, categories for the SKB, and the base line for composite hierarchies for the SKB.

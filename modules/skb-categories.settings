@@ -1,6 +1,6 @@
 skb.module.artifact=skb.categories
 skb.module.directory=categories
-skb.module.version=0.0.3
+skb.module.version=0.0.4-SNAPSHOT
 skb.module.name=SKB Categories
 skb.module.url=https://github.com/vdmeer/skb-java-categories
 skb.module.description=Set of interfaces to build a category hierarchy
