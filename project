@@ -55,13 +55,10 @@ dir_target="target"
 defined_modules=`ls modules/*.settings | sed -e 's/modules\///' -e 's/\.settings//'`
 
 # Defined tasks as per functions in this script
-defined_tasks="prepare-files test-files create-pom set-versions create-demo-templates deploy-demo"
+defined_tasks="prepare-files test-files create-pom set-versions create-demo-templates deploy-demo create-bundle"
 
 # Version file with BASH variable exports
 fn_version_bash="$dir_target/version.bash"
-
-# Version file in ANT/MAVEN property style
-fn_version_ant="$dir_target/version.ant"
 
 # Unset file for bash
 fn_bash_unset="$dir_target/unset.bash"
@@ -278,10 +275,6 @@ prepare-files()
 		touch $fn_version_bash
 	fi
 
-	if [ ! -f $fn_version_ant ]; then
-		touch $fn_version_ant
-	fi
-
 	if [ ! -f $fn_bash_unset ]; then
 		touch $fn_bash_unset
 	fi
@@ -299,25 +292,13 @@ prepare-files()
 	# source that created bash file for version processing
 	source $fn_out
 	# for the artifact name set BASH formattings
-	artifact_version_bash="`echo $skb_module_artifact | sed -e 's/\./_/g'`_version"
+	artifact_version_bash="`echo $skb_module_artifact | sed -e 's/\-/_/g'`_version"
 	# and add that to the bash files created
 	echo "export artifact_version_bash=\"${artifact_version_bash}\"" >> $fn_out
 	echo "unset -v artifact_version_bash" >> $fn_bash_unset
 
 	# new create version information
-	# first, process the ANT file
-	if grep -q $skb_module_artifact "$fn_version_ant"; then
-		# ok, the version is already in there, replace
-		local fn_tmp=$fn_version_ant.tmp
-		touch $fn_tmp
-		`cat $fn_version_ant | sed -e 's/^'$skb_module_artifact'.*$/'$skb_module_artifact'='$skb_module_version'/' > $fn_tmp`
-		mv $fn_tmp $fn_version_ant
-	else
-		# version not in there yet, add
-		echo "$skb_module_artifact=$skb_module_version" >> $fn_version_ant
-	fi
-
-	# next, process the BASH file
+	# process the BASH file
 	if grep -q "export $artifact_version_bash" "$fn_version_bash"; then
 		# ok, the version is already in there, replace
 		local fn_tmp=$fn_version_bash.tmp
@@ -340,10 +321,6 @@ test-files()
 {
 	if [ ! -d $dir_target ]; then
 		PrintMessage "no target directory found, cannot proceed, try task <prepare-files>"
-		exit 255
-	fi
-	if [ ! -f $fn_version_ant ]; then
-		PrintMessage "no version file for ANT found, cannot proceed, try task <prepare-files>"
 		exit 255
 	fi
 	if [ ! -f $fn_version_bash ]; then
@@ -443,7 +420,7 @@ create-pom()
 		echo "	<dependencies>" >> $out_fn_fqpn
 			for intdep in $skb_module_internalDependencies
 			do
-				_v=`echo $intdep | sed -e 's/\./_/g'`_version
+				_v=`echo $intdep | sed -e 's/\-/_/g'`_version
 				settings_fn=modules/$intdep.settings
 				echo "		<dependency>" >> $out_fn_fqpn
 				echo -n "			" >> $out_fn_fqpn
@@ -463,6 +440,7 @@ create-pom()
 		if [ -f modules/$1-plugins.xml ] ; then
 			cat modules/$1-plugins.xml >> $out_fn_fqpn
 		fi
+		cat pom-artifacts/plugin-jar.xml >> $out_fn_fqpn
 		cat pom-artifacts/plugin-compiler.xml >> $out_fn_fqpn
 		cat pom-artifacts/plugin-javadoc.xml >> $out_fn_fqpn
 		cat pom-artifacts/plugin-dependency.xml >> $out_fn_fqpn
@@ -617,6 +595,37 @@ deploy-demo()
 		(cd ../$skb_module_directory; bash deploy-demo)
 	else
 		PrintMessage "------> no script for deploying demos"
+	fi
+}
+
+
+
+##
+## Create Bundles
+##
+create-bundle()
+{
+	if [ -d "../$skb_module_directory/target" ] ; then
+		if [ ! -d $dir_target ]; then
+			mkdir $dir_target
+		fi
+		if [ ! -d $dir_target/bundles ]; then
+			mkdir $dir_target/bundles
+		fi
+		if [ ! -d $dir_target/bundles/$skb_module_directory ]; then
+			mkdir $dir_target/bundles/$skb_module_directory
+		fi
+		cp ../$skb_module_directory/target/*.jar $dir_target/bundles/$skb_module_directory
+		cp ../$skb_module_directory/pom.xml $dir_target/bundles/$skb_module_directory
+
+		for i in ` find $dir_target/bundles/$skb_module_directory -type f`
+		do
+			gpg -ab $i
+		done
+
+		(cd $dir_target/bundles/$skb_module_directory; tar cvfz ../$skb_module_directory.tar.gz *)
+	else
+		PrintMessage "------> no target directory, try 'mvn package' first"
 	fi
 }
 

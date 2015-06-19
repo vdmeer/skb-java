@@ -1,6 +1,6 @@
-skb.module.artifact=skb.examples
+skb.module.artifact=skb-examples
 skb.module.directory=examples
-skb.module.version=0.0.4-SNAPSHOT
+skb.module.version=0.0.4
 skb.module.name=SKB Examples
 skb.module.url=https://github.com/vdmeer/skb-java-examples
 skb.module.description=Examples for the Java port of the SKB
@@ -14,5 +14,5 @@ skb.module.scm.tag=skb-examples-0.0.3
 skb.module.scm.url=https://github.com/vdmeer/skb-java-examples
 skb.module.issueManagement.url=https://github.com/vdmeer/skb-java-examples/issues
 skb.module.issueManagement.system=github
-skb.module.internalDependencies=execs asciitable skb.base
+skb.module.internalDependencies=execs asciitable skb-base
 skb.module.packaging=
