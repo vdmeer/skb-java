@@ -522,7 +522,7 @@ create-demo-templates()
 		echo "" >> $fn_bat_exec_tpl
 
 		cp $fn_bat_head_tpl $fn_bat_java_tpl
-		echo "java -Dfile.encoding=UTF-8 -classpath \"${CP_JAVA}\" ##JAVA_MAIN_CLASS## %1 %2 %3 %4 %5 %6 %7 %8 %9" >> $fn_bat_java_tpl
+		echo "java -Dfile.encoding=UTF-8 -Dlogback.configurationFile=\${DEMO_HOME}/etc/logback.xml -classpath \"${CP_JAVA}\" ##JAVA_MAIN_CLASS## %1 %2 %3 %4 %5 %6 %7 %8 %9" >> $fn_bat_java_tpl
 		echo "" >> $fn_bat_java_tpl
 
 
@@ -541,7 +541,7 @@ create-demo-templates()
 		echo "" >> $fn_sh_exec_tpl
 
 		cp $fn_sh_head_tpl $fn_sh_java_tpl
-		echo "java -Dfile.encoding=UTF-8 -classpath \"${CP_JAVA}\" ##JAVA_MAIN_CLASS## \$*" >> $fn_sh_java_tpl
+		echo "java -Dfile.encoding=UTF-8 -Dlogback.configurationFile=\${DEMO_HOME}/etc/logback.xml -classpath \"${CP_JAVA}\" ##JAVA_MAIN_CLASS## \$*" >> $fn_sh_java_tpl
 		echo "" >> $fn_sh_java_tpl
 
 		## Create local templates
