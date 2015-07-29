@@ -57,6 +57,7 @@
 				<substitution expression="## @version    ${skb.version.long.sh}"/>
 				<fileset dir="@{module.dir}" >
 					<include name="src/**/*.sh" />
+					<exclude name="**/tasks/set-versions.sh" />
 				</fileset>
 			</replaceregexp>
 
