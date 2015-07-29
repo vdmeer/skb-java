@@ -94,10 +94,8 @@
 		<module>../asciitable</module>
 		<module>../svg2vector</module>
 		<module>../base</module>
-		<module>../collections</module>
 		<module>../categories</module>
 		<module>../commons</module>
-		<module>../composite</module>
 		<module>../configuration</module>
 		<module>../examples</module>
 	</modules>

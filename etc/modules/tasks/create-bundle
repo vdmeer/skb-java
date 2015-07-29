@@ -1,0 +1,37 @@
+#!/bin/bash
+
+##
+## Create Bundles.
+## call with
+##   - $1 being the name of the module to prepare files for
+##   - $2 being the settings file name
+##
+
+target_dir=$2/../../../../target
+
+if [ -d "$target_dir" ] ; then
+	if [ ! -d $MOD_TARGET_DIR ]; then
+		mkdir $MOD_TARGET_DIR
+	fi
+	if [ ! -d $MOD_TARGET_MODULES_DIR ]; then
+		mkdir $MOD_TARGET_MODULES_DIR
+	fi
+	if [ ! -d $MOD_TARGET_MODULES_DIR/bundles ]; then
+		mkdir $MOD_TARGET_MODULES_DIR/bundles
+	fi
+	if [ ! -d $MOD_TARGET_MODULES_DIR/bundles/$1 ]; then
+		mkdir $MOD_TARGET_MODULES_DIR/bundles/$1
+	fi
+	cp $target_dir/*.jar $MOD_TARGET_MODULES_DIR/bundles/$1
+	cp $target_dir/../pom.xml $MOD_TARGET_MODULES_DIR/bundles/$1
+
+	for i in ` find $MOD_TARGET_MODULES_DIR/bundles/$1 -type f`
+	do
+		chmod 640 $i
+		gpg -ab $i
+	done
+
+	(cd $MOD_TARGET_MODULES_DIR/bundles/$1; tar cvfz ../$1.tar.gz *)
+else
+	echo "------> no target directory, try 'mvn package' first"
+fi

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+##
+## Tests the infrastructure, general and module specific
+## call with
+##   - $1 being the name of the module to prepare files for
+##   - $2 being the settings file name
+##
+
+if [ ! -d $MOD_TARGET_MODULES_DIR ]; then
+	echo "no target directory found, cannot proceed, try task <prepare-files>"
+	exit 255
+fi
+if [ ! -f $MOD_FILE_VERSION_BASH ]; then
+	echo "no version file for BASH found, cannot proceed, try task <prepare-files>"
+	exit 255
+fi
+if [ ! -f $MOD_TARGET_MODULES_DIR/$1.bash ]; then
+	echo "no BASH settings file for module <$1> found, cannot proceed, try task <prepare-files> for module <$1>"
+	exit 255
+fi
+
+echo "------> all files ok for module <$1>"

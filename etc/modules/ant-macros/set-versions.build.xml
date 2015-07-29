@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="skb" default="set-versions">
-	<!-- e.g. = modules/skb-asciitable.settings -->
-	<!-- ant -f ant-macros/version.build.xml  -DmoduleFile=../modules/skb-asciitable.settings -->
+<project name="sahara" default="set-versions">
+	<!-- e.g. = modules/sahara-dpi.settings -->
+	<!-- ant -f ant-macros/version.build.xml  -DmoduleFile=../modules/sahara-dpi.settings -->
 	<property file="${moduleFile}"/>
 
 	<property name="module.version" value="${skb.module.version}"/>

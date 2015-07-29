@@ -1,0 +1,10 @@
+#!/bin/bash
+
+##
+## Sets versions of some file types using ANT.
+## call with
+##   - $1 being the name of the module to prepare files for
+##   - $2 being the settings file name
+##
+
+ant -S -f $MOD_ETC_DIR/ant-macros/set-versions.build.xml -DmoduleFile=$2/$1.settings

@@ -34,33 +34,6 @@
 			</replaceregexp>
 
 			<replaceregexp byline="false" encoding="@{sourceEncoding}">
-				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
-				<regexp pattern=" \* @version(.*)"/>
-				<substitution expression=" \* \@version    ${skb.version.long.cola}"/>
-				<fileset dir="@{module.dir}" >
-					<include name="src/**/*.cola" />
-				</fileset>
-			</replaceregexp>
-
-			<replaceregexp byline="false" encoding="@{sourceEncoding}">
-				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
-				<regexp pattern=" \* @version(.*)"/>
-				<substitution expression=" \* \@version    ${skb.version.long.pola}"/>
-				<fileset dir="@{module.dir}" >
-					<include name="src/**/*.pola" />
-				</fileset>
-			</replaceregexp>
-
-			<replaceregexp byline="false" encoding="@{sourceEncoding}">
-				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
-				<regexp pattern=" \* @version(.*)"/>
-				<substitution expression=" \* \@version    ${skb.version.long.glue}"/>
-				<fileset dir="@{module.dir}" >
-					<include name="src/**/*.glue" />
-				</fileset>
-			</replaceregexp>
-
-			<replaceregexp byline="false" encoding="@{sourceEncoding}">
 				<!-- sed "s/^ \/\/ @version.*$/ \* @version    ${version}/" -->
 				<regexp pattern="// @version(.*)"/>
 				<substitution expression="// \@version    ${skb.version.long.json}"/>
@@ -70,20 +43,20 @@
 			</replaceregexp>
 
 			<replaceregexp byline="false" encoding="@{sourceEncoding}">
-				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
-				<regexp pattern=" \* @version(.*)"/>
-				<substitution expression=" \* \@version    ${skb.version.long.dal}"/>
+				<!-- sed "s/^ # @version.*$/ \* @version    ${version}/" -->
+				<regexp pattern=" # @version(.*)"/>
+				<substitution expression=" # \@version    ${skb.version.long.properties}"/>
 				<fileset dir="@{module.dir}" >
-					<include name="src/**/*.dal" />
+					<include name="src/**/*.properties" />
 				</fileset>
 			</replaceregexp>
 
 			<replaceregexp byline="false" encoding="@{sourceEncoding}">
-				<!-- sed "s/^ \* @version.*$/ \* @version    ${version}/" -->
-				<regexp pattern=" \* @version(.*)"/>
-				<substitution expression=" \* \@version    ${skb.version.long.properties}"/>
+				<!-- sed "s/^## @version.*$/ \*## @version    ${version}/" -->
+				<regexp pattern="## @version(.*)"/>
+				<substitution expression="## @version    ${skb.version.long.sh}"/>
 				<fileset dir="@{module.dir}" >
-					<include name="src/**/*.properties" />
+					<include name="src/**/*.sh" />
 				</fileset>
 			</replaceregexp>
 
