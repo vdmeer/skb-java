@@ -3,19 +3,8 @@
 grep -v '^#' env.settings | awk -F'\n' 'length { print $1 }' | awk -F' ' '{ print "setenv " $1 " " $2 }' > .source-tcsh.gen
 source .source-tcsh.gen
 
-#set system=`uname -o`
-#set prj_home=`(cd ..;pwd)`
-#
-#if ( "$system" == "Cygwin" ) then
-#	setenv PROJECT_HOME "/"`echo $prj_home | cut -d/ -f4-`
-#	setenv PROJECT_HOME_CYG ${prj_home}
-#	setenv PROJECT_HOME_DOS `cygpath -m ${prj_home}`
-#	setenv IVY_HOME ${PROJECT_HOME_DOS}
-#	setenv ASCII_DOC_EXEC ${PROJECT_HOME_DOS}/build/bin/asciidoc.bat
-#else
-#	setenv PROJECT_HOME ${prj_home}
-#	setenv PROJECT_HOME_CYG ${prj_home}
-#	setenv PROJECT_HOME_DOS ${prj_home}
-#	setenv IVY_HOME ${prj_home}
-#	setenv ASCII_DOC_EXEC `which asciidoc`
-#endif
+setenv PROJECT_MODULES 
+foreach dir (`\ls modules`)
+	setenv PROJECT_MODULES "$PROJECT_MODULES `echo $PWD`/modules/$dir"
+end
+setenv PROJECT_MODULES "$PROJECT_MODULES `echo $PWD`"

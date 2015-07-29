@@ -152,7 +152,7 @@ init()
 	for moddir in `echo $PROJECT_MODULES | sed -e 's/:/ /g'`
 	do
 		if [ ! -d $moddir ]; then
-			echo "------> ignroing path that does not exist -> $moddir"; continue
+			echo "------> ignoring path that does not exist -> $moddir"; continue
 		fi
 		if [ ! -d $moddir/$MOD_MODULE_SETTINGS_DIR ]; then
 			echo "------> ignoring path that does not contain directory 'src/main/module' -> $moddir"; continue
