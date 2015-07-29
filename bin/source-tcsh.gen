@@ -1,3 +1,0 @@
-setenv PROJECT_MODULES ../../execs/src/main/module:../../asciitable/src/main/module:../../svg2vector/src/main/module:../../base/src/main/module:../../categories/src/main/module:../../commons/src/main/module:../../configuration/src/main/module:../../examples/src/main/module
-setenv PROJECT_APPS_DIR ../../../../bin/dev-applications/skb/
-setenv MVN_GROUP_ID de.vandermeer

@@ -1,11 +1,31 @@
 #!/bin/bash
 
+## Copyright 2014-2015 Sven van der Meer <vdmeer.sven@mykolab.com>
 ##
-## Create a POM.
-## call with
-##   - $1 being the name of the module to prepare files for
-##   - $2 being the settings file name
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
 ##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+
+##
+## Task that creates a POM file Module.
+##
+## @package    de.vandermeer.skb
+## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
+## @copyright  2014-2015 Sven van der Meer
+## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
+## @version    v1.0.0 build 150729 (29-Jul-15)
+
+##
+## call with sourced settings file
 ## requires MVN_GROUP_ID set for maven groudID
 ##
 
@@ -22,15 +42,14 @@ if [ ! -d $gen_directory ]; then
 	mkdir $gen_directory
 fi
 
-out_fn_fqpn=$gen_directory/$1$file_extension
+out_fn_fqpn=$gen_directory/$skb_module_artifact$file_extension
 echo -n "" > $out_fn_fqpn
 
-pom_fn_fqpn=$2/../../../../pom.xml
+pom_fn_fqpn=$skb_module_directory/pom.xml
 
 cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 	cat $MOD_ETC_POMART_DIR/modelVersion.xml >> $out_fn_fqpn
 	echo "	<groupId>$MVN_GROUP_ID</groupId>" >> $out_fn_fqpn
-##	cat $MOD_ETC_POMART_DIR/groupId.xml >> $out_fn_fqpn
 	echo "	<artifactId>$skb_module_artifact</artifactId>" >> $out_fn_fqpn
 	echo "	<version>$skb_module_version</version>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
@@ -64,7 +83,7 @@ cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 	echo "	<scm>" >> $out_fn_fqpn
 		echo "		<developerConnection>$skb_module_scm_developerConnection</developerConnection>" >> $out_fn_fqpn
 		echo "		<connection>$skb_module_scm_connection</connection>" >> $out_fn_fqpn
-		echo "		<tag>$skb_module_scm_tag</tag>" >> $out_fn_fqpn
+		echo "		<tag>$skb_module_artifact-$skb_module_version</tag>" >> $out_fn_fqpn
 		echo "		<url>$skb_module_scm_url</url>" >> $out_fn_fqpn
 	echo "	</scm>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
@@ -76,15 +95,15 @@ cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
 	echo "	<developers>" >> $out_fn_fqpn
-		if [ -f $2/$1-developers.xml ] ; then
-			cat $2/$1-developers.xml >> $out_fn_fqpn
+		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-developers.xml ] ; then
+			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-developers.xml >> $out_fn_fqpn
 		fi
 	echo "	</developers>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
 	echo "	<contributors>" >> $out_fn_fqpn
-		if [ -f $2/$1-contributors.xml ] ; then
-			cat $2/$1-contributors.xml >> $out_fn_fqpn
+		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-contributors.xml ] ; then
+			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-contributors.xml >> $out_fn_fqpn
 		fi
 	echo "	</contributors>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
@@ -95,21 +114,20 @@ cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 			_v=`echo $intdep | sed -e 's/\-/_/g'`_version
 			echo "		<dependency>" >> $out_fn_fqpn
 			echo "			<groupId>$MVN_GROUP_ID</groupId>" >> $out_fn_fqpn
-##			cat $MOD_ETC_POMART_DIR/groupId.xml >> $out_fn_fqpn
 			echo "			<artifactId>$intdep</artifactId>" >> $out_fn_fqpn
 			echo "			<version>${!_v}</version>" >> $out_fn_fqpn
 			echo "		</dependency>" >> $out_fn_fqpn
 		done
-		if [ -f $2/$1-dependencies.xml ] ; then
-			cat $2/$1-dependencies.xml >> $out_fn_fqpn
+		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-dependencies.xml ] ; then
+			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-dependencies.xml >> $out_fn_fqpn
 		fi
 	echo "	</dependencies>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
 	echo "	<build>" >> $out_fn_fqpn
 	echo "		<plugins>" >> $out_fn_fqpn
-	if [ -f $2/$1-plugins.xml ] ; then
-		cat $2/$1-plugins.xml >> $out_fn_fqpn
+	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-plugins.xml ] ; then
+		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-plugins.xml >> $out_fn_fqpn
 	fi
 	cat $MOD_ETC_POMART_DIR/plugin-jar.xml >> $out_fn_fqpn
 	cat $MOD_ETC_POMART_DIR/plugin-compiler.xml >> $out_fn_fqpn
@@ -125,8 +143,8 @@ cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 		echo "	<packaging>jar</packaging>" >> $out_fn_fqpn
 	fi
 
-	if [ -f $2/$1-profiles.xml ] ; then
-		cat $2/$1-profiles.xml >> $out_fn_fqpn
+	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$1-profiles.xml ] ; then
+		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$1-profiles.xml >> $out_fn_fqpn
 	fi
 
 cat $MOD_ETC_POMART_DIR/project-close.xml >> $out_fn_fqpn

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ## Copyright 2014-2015 Sven van der Meer <vdmeer.sven@mykolab.com>
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +32,14 @@
 ##
 
 
+## project home directory, target is placed here
+if [ -z "$PROJECT_HOME" ] ; then
+	echo "$MOD_SCRIPT_NAME: no project home directory defined"
+	echo " --> create environment variable \$PROJECT_HOME pointing to the home directory"
+	echo ""
+	exit
+fi
+
 ## script directory, from https://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 export MOD_SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ## script name for error/info messages
@@ -43,63 +50,31 @@ export MOD_ETC_DIR=$MOD_SCRIPT_DIR/../etc/modules
 
 ## etc based directory with all tasks
 export MOD_ETC_TASKS_DIR=$MOD_ETC_DIR/tasks
-MOD_AVAILABLE_TASKS=`ls $MOD_ETC_TASKS_DIR`
+MOD_AVAILABLE_TASKS=`ls $MOD_ETC_TASKS_DIR | sed -e 's/\.sh//g'`
 
 ## etc based directory with POM artifacts
 export MOD_ETC_POMART_DIR=$MOD_ETC_DIR/pom-artifacts
 
 ## target directory for created artifacts and files
-export MOD_TARGET_DIR=$MOD_SCRIPT_DIR/../target
+export MOD_TARGET_DIR=$PROJECT_HOME/target
 export MOD_TARGET_MODULES_DIR=$MOD_TARGET_DIR/modules
 
-# version file with BASH variable exports
+## version file with BASH variable exports
 export MOD_FILE_VERSION_BASH=$MOD_TARGET_MODULES_DIR/version.bash
-# unset file for bash
+## unset file for bash
 export MOD_FILE_UNSET_BASH=$MOD_TARGET_MODULES_DIR/unset.bash
 
-
-
-# Project name for printouts
-#project_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
-
-# array for defined modules: key is module name value is module directory (with settings)
-declare -A MOD_DEFINED_MODULES
-if [ ! -z "$PROJECT_MODULES" ] ; then
-	for moddir in `echo $PROJECT_MODULES | sed -e 's/:/ /g'`
-	do
-		if [[ $moddir == *"src/main/module" ]] ; then
-			if [ -d $MOD_SCRIPT_DIR/$moddir ]; then
-				if [ "1" == "`ls -1U $MOD_SCRIPT_DIR/$moddir | wc -l`" ]; then
-					if [ "2" == "`(cd $MOD_SCRIPT_DIR/$moddir;find -type d |wc -l)`" ]; then
-						value=${MOD_SCRIPT_DIR}/${moddir}/`ls $MOD_SCRIPT_DIR/$moddir`
-						key=`echo ${value##*/}`
-						if [ -f ${value}/${key}.settings ]; then
-							MOD_DEFINED_MODULES["$key"]="$value"
-						else
-							echo "$MOD_SCRIPT_NAME: ignoring path to module that does not contain settings file '${key}.settings' -> $moddir"
-						fi
-					else
-						echo "$MOD_SCRIPT_NAME: ignoring path to module that contains more than 1 directory -> $moddir"
-					fi
-				else
-					echo "$MOD_SCRIPT_NAME: ignoring path to module that contains more than 1 entry -> $moddir"
-				fi
-			else
-				echo "$MOD_SCRIPT_NAME: ignoring path to module that does not exist -> $moddir"
-			fi
-		else
-			echo "$MOD_SCRIPT_NAME: ignoring path to module that does not end with 'src/main/module' -> $moddir"
-		fi
-	done
-else
-	echo "$MOD_SCRIPT_NAME: no modules defined"
-	echo " --> create environment variable \$PROJECT_MODULES and add paths to modules, one per line, separated by colon or space"
-	echo " --> a path needs to be relative from $MOD_SCRIPT_DIR"
-	echo " --> a path needs to point to a directory in a maven project that ends with 'src/main/module'"
-	echo " --> in the folder the path points to should be 1 (only 1) directory with having the name of the module"
-	echo ""
-	exit
+## generated file with available modules
+export MOD_FILE_MODULES=$MOD_TARGET_MODULES_DIR/modules.list
+if [ -f $MOD_FILE_MODULES ]; then
+	MOD_MODULES_LIST=`cat $MOD_FILE_MODULES`
 fi
+
+## module settings dir
+export MOD_MODULE_SETTINGS_DIR=src/main/module
+
+#### Project name for printouts
+####project_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
 
 
 
@@ -108,9 +83,10 @@ fi
 ##
 Help()
 {
+	echo ""
 	echo "$MOD_SCRIPT_NAME - prepares modules for deployment"
 	echo ""
-	echo "       Usage:  $MOD_SCRIPT_NAME [-options] [task] [module]"
+	echo "       Usage:  $MOD_SCRIPT_NAME [-options] [module] [task]"
 	echo "         - use <-m module> and <-t task>"
 	echo "         - use -ma plus <-t task>"
 	echo "         - use -ta plus <-m module>"
@@ -122,7 +98,7 @@ Help()
 	echo "       -h     - this help screen"
 	echo "       -S     - silent mode, do not output anything except errors (tasks will output)"
 	echo "       -c     - clean up: remove most generated directories / files"
-##	echo "       -cD    - clean up: remove demo directory"
+	echo "       -i     - cleans and initializes: create target directies and process module setting files"
 	echo ""
 	echo "       Defined tasks:"
 	for task in $MOD_AVAILABLE_TASKS
@@ -131,7 +107,7 @@ Help()
 	done
 	echo ""
 	echo "       Defined modules:"
-	for mod in "${!MOD_DEFINED_MODULES[@]}"
+	for mod in $MOD_MODULES_LIST
 	do
 		echo "       - $mod"
 	done
@@ -148,6 +124,97 @@ fi
 
 
 ##
+## Creates target directories and prepares files from module settings
+##
+init()
+{
+	if [ ! -d $MOD_TARGET_DIR ]; then
+		mkdir $MOD_TARGET_DIR
+	fi
+	mkdir $MOD_TARGET_MODULES_DIR
+	touch $MOD_FILE_VERSION_BASH
+	touch $MOD_FILE_UNSET_BASH
+	touch $MOD_FILE_MODULES
+
+	if [ -z "$PROJECT_MODULES" ] ; then
+		echo "$MOD_SCRIPT_NAME: no modules defined"
+		echo " --> create environment variable \$PROJECT_MODULES and add paths to modules, one per line, separated by colon or space"
+		echo " --> a path needs to be absolute"
+		echo " --> a path needs to point to a directory in a maven project that ends with 'src/main/module'"
+		echo " --> in the folder the path points to should be 1 (only 1) directory with having the name of the module"
+		echo " --> in the folder of the module name must be a file <module-name>.settings"
+		echo ""
+		echo " --> module paths are not checked, use test-module to test module paths"
+		echo ""
+		exit
+	fi
+
+	for moddir in `echo $PROJECT_MODULES | sed -e 's/:/ /g'`
+	do
+		if [ ! -d $moddir ]; then
+			echo "------> ignroing path that does not exist -> $moddir"; continue
+		fi
+		if [ ! -d $moddir/$MOD_MODULE_SETTINGS_DIR ]; then
+			echo "------> ignoring path that does not contain directory 'src/main/module' -> $moddir"; continue
+		fi
+		local numSettingFiles=`ls -1U $moddir/$MOD_MODULE_SETTINGS_DIR/ | grep .settings | wc -l`
+		if [ "1" != "$numSettingFiles" ]; then
+			echo "------> ignoring path with $numSettingFiles settings file in 'src/main/module' -> $moddir"; continue
+		fi
+
+		local modSettingFile=$moddir/$MOD_MODULE_SETTINGS_DIR/`ls -1U $moddir/$MOD_MODULE_SETTINGS_DIR/ | grep .settings`
+		local modName=`basename $modSettingFile .settings`
+
+		#we now have a sort of valid module of name modName with settings file and root dir moddir
+		#generate files
+
+		# read settings for module and then create a BASH file for that
+		local fn_out=$MOD_TARGET_MODULES_DIR/$modName.bash
+		echo "" > $fn_out
+		# read settings file and create bash sourceable file
+		`cat $modSettingFile | sed -e ':b; s/^\([^=]*\)*\./\1_/; tb;' -e 's/=/=\"/' -e 's/$/\"/' -e 's/^/export /' > $fn_out`
+		# read settings and create a bash unset file
+		`cat $modSettingFile | sed -e 's/=.*//' -e 's/\./_/g' -e 's/^/unset -v /' -e 's/$//' > $MOD_FILE_UNSET_BASH`
+
+		#add directory to the settings file and to the unset file
+		echo "export skb_module_directory=\"${moddir}\"" >> $fn_out
+		echo "unset -v skb_module_directory" >> $MOD_FILE_UNSET_BASH
+
+		#add module name to the settings file and to the unset file
+		echo "export skb_module_artifact=\"${modName}\"" >> $fn_out
+		echo "unset -v skb_module_artifact" >> $MOD_FILE_UNSET_BASH
+
+		# source that created bash file for version processing
+		source $fn_out
+		# for the artifact name set BASH formattings
+		artifact_version_bash="`echo $skb_module_artifact | sed -e 's/\-/_/g'`_version"
+		# and add that to the bash files created
+		echo "export artifact_version_bash=\"${artifact_version_bash}\"" >> $fn_out
+		echo "unset -v artifact_version_bash" >> $MOD_FILE_UNSET_BASH
+
+		# new create version information
+		# process the BASH file
+		if grep -q "export $artifact_version_bash" "$MOD_FILE_VERSION_BASH"; then
+			# ok, the version is already in there, replace
+			local fn_tmp=$MOD_FILE_VERSION_BASH.tmp
+			touch $fn_tmp
+			`cat $MOD_FILE_VERSION_BASH | sed -e 's/^export '$artifact_version_bash'.*$/export '$artifact_version_bash'='$skb_module_version'/' > $fn_tmp`
+			mv $fn_tmp $MOD_FILE_VERSION_BASH
+		else
+			# version not in there yet, add
+			echo "export $artifact_version_bash=$skb_module_version" >> $MOD_FILE_VERSION_BASH
+			echo "unset -v $artifact_version_bash" >> $MOD_FILE_UNSET_BASH
+		fi
+
+		# finally, write the module name into the module file
+		echo -n " $modName" >> $MOD_FILE_MODULES
+
+		echo "----> processed <$modName> -> $moddir"
+	done
+}
+
+
+##
 ## Process CLI and set processing parameters
 ## - we process all CLI options before going any further
 ## - we exit programme if CLI options are amigious (we don't want a wiered machine!)
@@ -160,11 +227,11 @@ progmod_silent=false
 while [ $# -gt 0 ]
 do
 	case $1 in
+		#-i init
+		-i)		rm -fr $MOD_TARGET_MODULES_DIR;init;exit 255;;
+
 		#-c cleans up
 		-c)		rm -fr $MOD_TARGET_MODULES_DIR;exit 255;;
-
-##		#-cD cleans up
-##		-cD)	rm -fr $dir_project_demo;exit 255;;
 
 		#-h prints help and exists
 		-h)		Help;exit 255;;
@@ -233,14 +300,14 @@ done
 todo_modules=
 if [ $all_modules == true ]; then
 	#case 1: all_modules is true
-	todo_modules="${!MOD_DEFINED_MODULES[@]}"
+	todo_modules=$MOD_MODULES_LIST
 else
 	if [ "$cli_module" == "" ]; then
 		#case 2: all_modules is false, cli_module is empty
 		echo "$MOD_SCRIPT_NAME: no module given"; exit 255;
 	else
 		#case 3: all_modules is false, cli_module is not empty
-		for mod in "${!MOD_DEFINED_MODULES[@]}"
+		for mod in $MOD_MODULES_LIST
 		do
 			if [ "$mod" == "$cli_module" ]; then
 				todo_modules=$cli_module
@@ -321,7 +388,7 @@ do
 	for task in $todo_tasks
 	do
 		PrintMessage "----> $task"
-		$MOD_ETC_TASKS_DIR/$task $mod ${MOD_DEFINED_MODULES["$mod"]}
+		$MOD_ETC_TASKS_DIR/$task.sh
 	done
 done
 exit 0;
