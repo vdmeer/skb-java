@@ -3,3 +3,7 @@ target/
 .project
 .settings
 modules/
+_intern/
+_tests/
+modules/tribe
+
