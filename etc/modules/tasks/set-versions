@@ -7,4 +7,14 @@
 ##   - $2 being the settings file name
 ##
 
-ant -S -f $MOD_ETC_DIR/ant-macros/set-versions.build.xml -DmoduleFile=$2/$1.settings
+path=$MOD_ETC_DIR/ant-macros/set-versions.build.xml
+module_file=$2/$1.settings
+module_dir=$2/../../../..
+system=`uname -o`
+if [ "$system" == "Cygwin" ] ; then
+	path=`cygpath -m ${path}`
+	module_file=`cygpath -m ${module_file}`
+	module_dir=`cygpath -m ${module_dir}`
+fi
+
+ant -S -f $path -DmoduleFile=$module_file -DmoduleDir=$module_dir
