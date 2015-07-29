@@ -1,4 +1,5 @@
-target
+target/
 .source-tcsh.gen
 .project
 .settings
+modules/
