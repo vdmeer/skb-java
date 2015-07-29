@@ -6,6 +6,13 @@
 ##   - $1 being the name of the module to prepare files for
 ##   - $2 being the settings file name
 ##
+## requires MVN_GROUP_ID set for maven groudID
+##
+
+if [ -z "$MVN_GROUP_ID" ]; then
+	echo "no groupId set, use \$MVN_GROUP_ID"
+	exit 255
+fi
 
 source $MOD_FILE_VERSION_BASH
 
@@ -22,8 +29,8 @@ pom_fn_fqpn=$2/../../../../pom.xml
 
 cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 	cat $MOD_ETC_POMART_DIR/modelVersion.xml >> $out_fn_fqpn
-	echo -n "	" >> $out_fn_fqpn
-	cat $MOD_ETC_POMART_DIR/groupId.xml >> $out_fn_fqpn
+	echo "	<groupId>$MVN_GROUP_ID</groupId>" >> $out_fn_fqpn
+##	cat $MOD_ETC_POMART_DIR/groupId.xml >> $out_fn_fqpn
 	echo "	<artifactId>$skb_module_artifact</artifactId>" >> $out_fn_fqpn
 	echo "	<version>$skb_module_version</version>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
@@ -87,8 +94,8 @@ cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 		do
 			_v=`echo $intdep | sed -e 's/\-/_/g'`_version
 			echo "		<dependency>" >> $out_fn_fqpn
-			echo -n "			" >> $out_fn_fqpn
-			cat $MOD_ETC_POMART_DIR/groupId.xml >> $out_fn_fqpn
+			echo "			<groupId>$MVN_GROUP_ID</groupId>" >> $out_fn_fqpn
+##			cat $MOD_ETC_POMART_DIR/groupId.xml >> $out_fn_fqpn
 			echo "			<artifactId>$intdep</artifactId>" >> $out_fn_fqpn
 			echo "			<version>${!_v}</version>" >> $out_fn_fqpn
 			echo "		</dependency>" >> $out_fn_fqpn

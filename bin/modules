@@ -1,0 +1,327 @@
+#!/bin/bash
+
+
+## Copyright 2014-2015 Sven van der Meer <vdmeer.sven@mykolab.com>
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+
+##
+## Shell script to automate build and deployment of maven projects.
+##
+## @package    de.vandermeer.skb
+## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
+## @copyright  2014-2015 Sven van der Meer
+## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
+## @version    v1.0.0 build 150729 (29-Jul-15)
+##
+
+
+
+##
+## Don't change anything below unless you know what you are doing :)
+##
+
+
+## script directory, from https://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+export MOD_SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+## script name for error/info messages
+export MOD_SCRIPT_NAME=`basename $0`
+
+## etc directory with all settings and sub scripts
+export MOD_ETC_DIR=$MOD_SCRIPT_DIR/../etc/modules
+
+## etc based directory with all tasks
+export MOD_ETC_TASKS_DIR=$MOD_ETC_DIR/tasks
+MOD_AVAILABLE_TASKS=`ls $MOD_ETC_TASKS_DIR`
+
+## etc based directory with POM artifacts
+export MOD_ETC_POMART_DIR=$MOD_ETC_DIR/pom-artifacts
+
+## target directory for created artifacts and files
+export MOD_TARGET_DIR=$MOD_SCRIPT_DIR/../target
+export MOD_TARGET_MODULES_DIR=$MOD_TARGET_DIR/modules
+
+# version file with BASH variable exports
+export MOD_FILE_VERSION_BASH=$MOD_TARGET_MODULES_DIR/version.bash
+# unset file for bash
+export MOD_FILE_UNSET_BASH=$MOD_TARGET_MODULES_DIR/unset.bash
+
+
+
+# Project name for printouts
+#project_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
+
+# array for defined modules: key is module name value is module directory (with settings)
+declare -A MOD_DEFINED_MODULES
+if [ ! -z "$PROJECT_MODULES" ] ; then
+	for moddir in `echo $PROJECT_MODULES | sed -e 's/:/ /g'`
+	do
+		if [[ $moddir == *"src/main/module" ]] ; then
+			if [ -d $MOD_SCRIPT_DIR/$moddir ]; then
+				if [ "1" == "`ls -1U $MOD_SCRIPT_DIR/$moddir | wc -l`" ]; then
+					if [ "2" == "`(cd $MOD_SCRIPT_DIR/$moddir;find -type d |wc -l)`" ]; then
+						value=${MOD_SCRIPT_DIR}/${moddir}/`ls $MOD_SCRIPT_DIR/$moddir`
+						key=`echo ${value##*/}`
+						if [ -f ${value}/${key}.settings ]; then
+							MOD_DEFINED_MODULES["$key"]="$value"
+						else
+							echo "$MOD_SCRIPT_NAME: ignoring path to module that does not contain settings file '${key}.settings' -> $moddir"
+						fi
+					else
+						echo "$MOD_SCRIPT_NAME: ignoring path to module that contains more than 1 directory -> $moddir"
+					fi
+				else
+					echo "$MOD_SCRIPT_NAME: ignoring path to module that contains more than 1 entry -> $moddir"
+				fi
+			else
+				echo "$MOD_SCRIPT_NAME: ignoring path to module that does not exist -> $moddir"
+			fi
+		else
+			echo "$MOD_SCRIPT_NAME: ignoring path to module that does not end with 'src/main/module' -> $moddir"
+		fi
+	done
+else
+	echo "$MOD_SCRIPT_NAME: no modules defined"
+	echo " --> create environment variable \$PROJECT_MODULES and add paths to modules, one per line, separated by colon or space"
+	echo " --> a path needs to be relative from $MOD_SCRIPT_DIR"
+	echo " --> a path needs to point to a directory in a maven project that ends with 'src/main/module'"
+	echo " --> in the folder the path points to should be 1 (only 1) directory with having the name of the module"
+	echo ""
+	exit
+fi
+
+
+
+##
+## Help screen and exit condition (i.e. too few arguments)
+##
+Help()
+{
+	echo "$MOD_SCRIPT_NAME - prepares modules for deployment"
+	echo ""
+	echo "       Usage:  $MOD_SCRIPT_NAME [-options] [task] [module]"
+	echo "         - use <-m module> and <-t task>"
+	echo "         - use -ma plus <-t task>"
+	echo "         - use -ta plus <-m module>"
+	echo "         - use -ma and -ta and no further task nor module"
+	echo ""
+	echo "       Options"
+	echo "       -ma    - process all defined modules"
+	echo "       -ta    - process all defined tasks (results might not be what you expect!)"
+	echo "       -h     - this help screen"
+	echo "       -S     - silent mode, do not output anything except errors (tasks will output)"
+	echo "       -c     - clean up: remove most generated directories / files"
+##	echo "       -cD    - clean up: remove demo directory"
+	echo ""
+	echo "       Defined tasks:"
+	for task in $MOD_AVAILABLE_TASKS
+	do
+		echo "       - $task"
+	done
+	echo ""
+	echo "       Defined modules:"
+	for mod in "${!MOD_DEFINED_MODULES[@]}"
+	do
+		echo "       - $mod"
+	done
+	echo ""
+	echo "       Requirements: bash version 4, some tasks might have other requirements"
+	echo "       Requirements: \$PROJECT_MODULES must contain set of paths to modules, separated by colon (:)"
+	echo ""
+	exit 255;
+}
+if [ $# -eq 0 ]; then
+	Help
+fi
+
+
+
+##
+## Process CLI and set processing parameters
+## - we process all CLI options before going any further
+## - we exit programme if CLI options are amigious (we don't want a wiered machine!)
+##
+all_modules=false
+all_tasks=false
+cli_module=
+cli_task=
+progmod_silent=false
+while [ $# -gt 0 ]
+do
+	case $1 in
+		#-c cleans up
+		-c)		rm -fr $MOD_TARGET_MODULES_DIR;exit 255;;
+
+##		#-cD cleans up
+##		-cD)	rm -fr $dir_project_demo;exit 255;;
+
+		#-h prints help and exists
+		-h)		Help;exit 255;;
+
+		#-S activates silent mode
+		-S)		shift;progmod_silent=true;;
+
+		# -ma checks if a single module was given, if not then set all modules to true
+		-ma)	if [ "$cli_module" == "" ]; then
+					shift;
+					all_modules=true;
+				else
+					echo "$MOD_SCRIPT_NAME: -ma used and single module specified, which one?";
+					exit 255;
+				fi
+		;;
+
+		# -ta checks if a single task was given, if not then set all tasks to true
+		-ta)	if [ "$cli_task" == "" ]; then
+					shift;
+					all_tasks=true;
+				else
+					echo "$MOD_SCRIPT_NAME: -ta used and single task specified, which one?";
+					exit 255;
+				fi
+		;;
+
+		# -t checks if all tasks are used, if not then if a task is given
+		-t)		if [ $all_tasks == true ]; then
+					echo "$MOD_SCRIPT_NAME: single task specified and -ta used, which one?";
+					exit 255;
+				else
+					shift;
+					if [ "$1" == "" ];then
+						echo "$MOD_SCRIPT_NAME: -t used without a task";
+						exit 255;
+					else
+						cli_task=$1;
+						shift;
+					fi
+				fi
+		;;
+
+		# -m checks if all modules are used, if not then if a module is given
+		-m)		if [ $all_modules == true ]; then
+					echo "$MOD_SCRIPT_NAME: single module specified and -ma used, which one?";
+					exit 255;
+				else
+					shift;
+					if [ "$1" == "" ];then
+						echo "$MOD_SCRIPT_NAME: -m used without a module";
+						exit 255;
+					else
+						cli_module=$1;
+						shift;
+					fi
+				fi
+		;;
+		*)	echo "$MOD_SCRIPT_NAME: undefined CLI option - $1"; exit 255;;
+	esac
+done
+
+## now check if we have modules and tasks to process and if they are valid
+
+## start with modules
+todo_modules=
+if [ $all_modules == true ]; then
+	#case 1: all_modules is true
+	todo_modules="${!MOD_DEFINED_MODULES[@]}"
+else
+	if [ "$cli_module" == "" ]; then
+		#case 2: all_modules is false, cli_module is empty
+		echo "$MOD_SCRIPT_NAME: no module given"; exit 255;
+	else
+		#case 3: all_modules is false, cli_module is not empty
+		for mod in "${!MOD_DEFINED_MODULES[@]}"
+		do
+			if [ "$mod" == "$cli_module" ]; then
+				todo_modules=$cli_module
+			fi
+		done
+		if [ "$todo_modules" == "" ]; then
+			echo "$MOD_SCRIPT_NAME: no valid module given - module <$cli_module> is not defined"; exit 255;
+		fi
+	fi
+fi
+
+## next is tasks
+todo_tasks=
+if [ $all_tasks == true ]; then
+	#case 1: all_tasks is true
+	todo_tasks="$MOD_AVAILABLE_TASKS"
+else
+	if [ "$cli_task" == "" ]; then
+		#case 2: all_tasks is false, cli_task is empty
+		echo "$MOD_SCRIPT_NAME: no task given"; exit 255;
+	else
+		#case 3: all_tasks is false, cli_task is not empty
+		for mod in $MOD_AVAILABLE_TASKS
+		do
+			if [ "$mod" == "$cli_task" ]; then
+				todo_tasks="$cli_task"
+			fi
+		done
+		if [ "$todo_tasks" == "" ]; then
+			echo "$MOD_SCRIPT_NAME: no valid task given - task <$cli_task> is not defined"; exit 255;
+		fi
+	fi
+fi
+
+
+
+##
+## Function to echo messages, except when in silent mode
+##
+PrintMessage()
+{
+	if [ $progmod_silent == false ]; then
+		if [ "$2" == "" ]; then
+			echo "$1"
+		else
+			echo "$1: $2"
+		fi
+	fi
+}
+
+
+
+## now we have a list of modules and tasks in the todo_ variables, minimum length is 1
+#PrintMessage $MOD_SCRIPT_NAME "processing modules: $todo_modules"
+#PrintMessage $MOD_SCRIPT_NAME "processing tasks:   $todo_tasks"
+
+
+
+##
+## Source files requried to process tasks for modules
+##
+SourceFiles()
+{
+	source $MOD_FILE_VERSION_BASH >& /dev/null
+	source $MOD_FILE_UNSET_BASH >& /dev/null
+	source $MOD_TARGET_MODULES_DIR/$1.bash >& /dev/null
+}
+
+
+
+##
+## Run the selected task(s) for the selected module(s)
+##
+for mod in $todo_modules
+do
+	PrintMessage "--> <$mod>"
+	SourceFiles $mod
+	for task in $todo_tasks
+	do
+		PrintMessage "----> $task"
+		$MOD_ETC_TASKS_DIR/$task $mod ${MOD_DEFINED_MODULES["$mod"]}
+	done
+done
+exit 0;
