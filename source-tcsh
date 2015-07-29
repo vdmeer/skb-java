@@ -1,7 +1,7 @@
 #!/usr/bin/tcsh
 
-grep -v '^#' env.settings | awk -F'\n' 'length { print $1 }' | awk -F' ' '{ print "setenv " $1 " " $2 }' > source-tcsh.gen
-source source-tcsh.gen
+grep -v '^#' env.settings | awk -F'\n' 'length { print $1 }' | awk -F' ' '{ print "setenv " $1 " " $2 }' > .source-tcsh.gen
+source .source-tcsh.gen
 
 #set system=`uname -o`
 #set prj_home=`(cd ..;pwd)`

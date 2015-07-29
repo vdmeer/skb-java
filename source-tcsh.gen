@@ -1,4 +1,0 @@
-setenv PROJECT_HOME /cygdrive/v/dev/github/skb-java/skb
-setenv PROJECT_MODULES /cygdrive/v/dev/github/skb-java/exe:/cygdrive/v/dev/github/skb-java/asciitable:/cygdrive/v/dev/github/skb-java/svg2vector:/cygdrive/v/dev/github/skb-java/base:/cygdrive/v/dev/github/skb-java/categories:/cygdrive/v/dev/github/skb-java/commons:/cygdrive/v/dev/github/skb-java/configuration:/cygdrive/v/dev/github/skb-java/examples
-setenv PROJECT_APPS_DIR /cygdrive/v/dev/bin/dev-applications/skb
-setenv MVN_GROUP_ID de.vandermeer
