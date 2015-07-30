@@ -146,16 +146,24 @@ fi
 ##
 init()
 {
+	echo -n "init ."
 	if [ ! -d $MOD_TARGET_DIR ]; then
 		mkdir $MOD_TARGET_DIR
 	fi
+	echo -n "."
 	mkdir $MOD_TARGET_MODULES_DIR
+	echo -n "."
 	touch $MOD_FILE_VERSION_BASH
+	echo -n "."
 	touch $MOD_FILE_UNSET_BASH
+	echo -n "."
 	touch $mod_file_modules
+	echo -n "."
 	touch $mod_file_aliases
 
+	echo -n "."
 	if [ -z "$PROJECT_MODULES" ] ; then
+		echo ""
 		echo "$MOD_SCRIPT_NAME: no modules defined"
 		echo " --> create environment variable \$PROJECT_MODULES and add paths to modules, one per line, separated by colon or space"
 		echo " --> a path needs to be absolute"
@@ -167,26 +175,34 @@ init()
 		echo ""
 		exit
 	fi
+	echo " - done"
 
 	for moddir in `echo $PROJECT_MODULES | sed -e 's/:/ /g'`
 	do
+		echo -n "."
 		if [ ! -d $moddir ]; then
 			echo "---> ignoring path that does not exist -> $moddir"; continue
 		fi
+
+		echo -n "."
 		if [ ! -d $moddir/$MOD_MODULE_SETTINGS_DIR ]; then
 			echo "---> ignoring path that does not contain directory 'src/main/module' -> $moddir"; continue
 		fi
+
+		echo -n "."
 		local numSettingFiles=`ls -1U $moddir/$MOD_MODULE_SETTINGS_DIR/ | grep .settings | wc -l`
 		if [ "1" != "$numSettingFiles" ]; then
 			echo "---> ignoring path with $numSettingFiles settings file in 'src/main/module' -> $moddir"; continue
 		fi
 
+		echo -n "."
 		local modSettingFile=$moddir/$MOD_MODULE_SETTINGS_DIR/`ls -1U $moddir/$MOD_MODULE_SETTINGS_DIR/ | grep .settings`
 		local modName=`basename $modSettingFile .settings`
 
 		#we now have a sort of valid module of name modName with settings file and root dir moddir
 		#generate files
 
+		echo -n "."
 		# read settings for module and then create a BASH file for that
 		local fn_out=$MOD_TARGET_MODULES_DIR/$modName.bash
 		echo "" > $fn_out
@@ -195,14 +211,17 @@ init()
 		# read settings and create a bash unset file
 		`cat $modSettingFile | sed -e 's/=.*//' -e 's/\./_/g' -e 's/^/unset -v /' -e 's/$//' > $MOD_FILE_UNSET_BASH`
 
+		echo -n "."
 		#add directory to the settings file and to the unset file
 		echo "export skb_module_directory=\"${moddir}\"" >> $fn_out
 		echo "unset -v skb_module_directory" >> $MOD_FILE_UNSET_BASH
 
+		echo -n "."
 		#add module name to the settings file and to the unset file
 		echo "export skb_module_artifact=\"${modName}\"" >> $fn_out
 		echo "unset -v skb_module_artifact" >> $MOD_FILE_UNSET_BASH
 
+		echo -n "."
 		# source that created bash file for version processing
 		source $fn_out
 		# for the artifact name set BASH formattings
@@ -211,6 +230,7 @@ init()
 		echo "export artifact_version_bash=\"${artifact_version_bash}\"" >> $fn_out
 		echo "unset -v artifact_version_bash" >> $MOD_FILE_UNSET_BASH
 
+		echo -n "."
 		# new create version information
 		# process the BASH file
 		if grep -q "export $artifact_version_bash" "$MOD_FILE_VERSION_BASH"; then
@@ -225,6 +245,7 @@ init()
 			echo "unset -v $artifact_version_bash" >> $MOD_FILE_UNSET_BASH
 		fi
 
+		echo -n "."
 		# finally, write the module name into the module file
 		echo "$modName" >> $mod_file_modules
 		if [ -z $skb_module_alias ]; then
@@ -233,11 +254,12 @@ init()
 			echo "$skb_module_alias" >> $mod_file_aliases
 		fi
 
+		echo -n "."
 		# echo some success message
 		if [ -z $skb_module_alias ]; then
-			echo "-> processed <$modName> -> $moddir"
+			echo " -> processed <$modName> -> $moddir"
 		else
-			echo "-> processed <$modName> with alias <$skb_module_alias> -> $moddir"
+			echo " -> processed <$modName> with alias <$skb_module_alias> -> $moddir"
 		fi
 	done
 }
@@ -373,25 +395,9 @@ fi
 
 
 
-##
-## Function to echo messages, except when in silent mode
-##
-PrintMessage()
-{
-	if [ $progmod_silent == false ]; then
-		if [ "$2" == "" ]; then
-			echo "$1"
-		else
-			echo "$1: $2"
-		fi
-	fi
-}
-
-
-
 ## now we have a list of modules and tasks in the todo_ variables, minimum length is 1
-#PrintMessage $MOD_SCRIPT_NAME "processing modules: $todo_modules"
-#PrintMessage $MOD_SCRIPT_NAME "processing tasks:   $todo_tasks"
+#echo $MOD_SCRIPT_NAME "processing modules: $todo_modules"
+#echo $MOD_SCRIPT_NAME "processing tasks:   $todo_tasks"
 
 
 
@@ -412,18 +418,17 @@ SourceFiles()
 ##
 for mod in $todo_modules
 do
-	if [ "$mod" == "${mod_module_map[$mod]}" ]; then
-		PrintMessage "--> module <$mod>"
-	else
-		PrintMessage "--> alias <$mod> for module <${mod_module_map[$mod]}>"
-	fi
-
-	PrintMessage "--> <${mod_module_map[$mod]}>"
 	SourceFiles ${mod_module_map[$mod]}
 	for task in $todo_tasks
 	do
-		PrintMessage "----> $task"
+
+		if [ "$mod" == "${mod_module_map[$mod]}" ]; then
+			echo -n "-> $task for <$mod> "
+		else
+			echo -n "-> $task for <$mod[${mod_module_map[$mod]}]> "
+		fi
 		$MOD_ETC_TASKS_DIR/$task.sh
+		echo ""
 	done
 done
 exit 0;
