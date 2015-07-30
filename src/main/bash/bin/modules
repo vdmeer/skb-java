@@ -64,11 +64,24 @@ export MOD_FILE_VERSION_BASH=$MOD_TARGET_MODULES_DIR/version.bash
 ## unset file for bash
 export MOD_FILE_UNSET_BASH=$MOD_TARGET_MODULES_DIR/unset.bash
 
-## generated file with available modules
-export MOD_FILE_MODULES=$MOD_TARGET_MODULES_DIR/modules.list
-if [ -f $MOD_FILE_MODULES ]; then
-	MOD_MODULES_LIST=`cat $MOD_FILE_MODULES`
+## generated file with available modules and aliases
+mod_file_modules=$MOD_TARGET_MODULES_DIR/mod_modules.list
+mod_file_aliases=$MOD_TARGET_MODULES_DIR/mod_aliases.list
+
+## mapping from aliasses to module names
+## http://www.artificialworlds.net/blog/2012/10/17/bash-associative-array-examples/
+declare -A mod_module_map
+if [ -f $mod_file_modules ]; then
+	if [ -f $mod_file_aliases ]; then
+		al_ar=(`cat $mod_file_aliases`)
+		md_ar=(`cat $mod_file_modules`)
+		for index in ${!al_ar[@]}
+		do
+			mod_module_map[${al_ar[$index]}]=${md_ar[$index]}
+		done
+	fi
 fi
+
 
 ## module settings dir
 export MOD_MODULE_SETTINGS_DIR=src/main/module
@@ -93,27 +106,32 @@ Help()
 	echo "         - use -ma and -ta and no further task nor module"
 	echo ""
 	echo "       Options"
-	echo "       -ma    - process all defined modules"
-	echo "       -ta    - process all defined tasks (results might not be what you expect!)"
-	echo "       -h     - this help screen"
-	echo "       -S     - silent mode, do not output anything except errors (tasks will output)"
-	echo "       -c     - clean up: remove most generated directories / files"
-	echo "       -i     - cleans and initializes: create target directies and process module setting files"
+	echo "         -ma    - process all defined modules"
+	echo "         -ta    - process all defined tasks (results might not be what you expect!)"
+	echo "         -h     - this help screen"
+	echo "         -S     - silent mode, do not output anything except errors (tasks will output)"
+	echo "         -c     - clean up: remove most generated directories / files"
+	echo "         -i     - cleans and initializes: create target directies and process module setting files"
 	echo ""
 	echo "       Defined tasks:"
 	for task in $MOD_AVAILABLE_TASKS
 	do
-		echo "       - $task"
+		echo "         - $task"
 	done
 	echo ""
-	echo "       Defined modules:"
-	for mod in $MOD_MODULES_LIST
-	do
-		echo "       - $mod"
-	done
+	echo -n "       Defined modules:"
+	if [ -f $mod_file_aliases ]; then
+		echo ""
+		for key in `cat $mod_file_aliases`
+		do
+			echo "         - ${key}"
+		done
+	else
+		echo " none"
+	fi
 	echo ""
 	echo "       Requirements: bash version 4, some tasks might have other requirements"
-	echo "       Requirements: \$PROJECT_MODULES must contain set of paths to modules, separated by colon (:)"
+	echo "       Requirements: \$PROJECT_MODULES must contain set of paths to modules, separated by colon (:) or spaces"
 	echo ""
 	exit 255;
 }
@@ -134,7 +152,8 @@ init()
 	mkdir $MOD_TARGET_MODULES_DIR
 	touch $MOD_FILE_VERSION_BASH
 	touch $MOD_FILE_UNSET_BASH
-	touch $MOD_FILE_MODULES
+	touch $mod_file_modules
+	touch $mod_file_aliases
 
 	if [ -z "$PROJECT_MODULES" ] ; then
 		echo "$MOD_SCRIPT_NAME: no modules defined"
@@ -207,9 +226,19 @@ init()
 		fi
 
 		# finally, write the module name into the module file
-		echo -n " $modName" >> $MOD_FILE_MODULES
+		echo "$modName" >> $mod_file_modules
+		if [ -z $skb_module_alias ]; then
+			echo "$modName" >> $mod_file_aliases
+		else
+			echo "$skb_module_alias" >> $mod_file_aliases
+		fi
 
-		echo "----> processed <$modName> -> $moddir"
+		# echo some success message
+		if [ -z $skb_module_alias ]; then
+			echo "----> processed <$modName> -> $moddir"
+		else
+			echo "----> processed <$modName> with alias <$skb_module_alias> -> $moddir"
+		fi
 	done
 }
 
@@ -300,16 +329,16 @@ done
 todo_modules=
 if [ $all_modules == true ]; then
 	#case 1: all_modules is true
-	todo_modules=$MOD_MODULES_LIST
+	todo_modules="${!mod_module_map[@]}"
 else
 	if [ "$cli_module" == "" ]; then
 		#case 2: all_modules is false, cli_module is empty
 		echo "$MOD_SCRIPT_NAME: no module given"; exit 255;
 	else
 		#case 3: all_modules is false, cli_module is not empty
-		for mod in $MOD_MODULES_LIST
+		for key in "${!mod_module_map[@]}"
 		do
-			if [ "$mod" == "$cli_module" ]; then
+			if [ "${key}" == "$cli_module" ]; then
 				todo_modules=$cli_module
 			fi
 		done
@@ -383,8 +412,14 @@ SourceFiles()
 ##
 for mod in $todo_modules
 do
-	PrintMessage "--> <$mod>"
-	SourceFiles $mod
+	if [ "$mod" == "${mod_module_map[$mod]}" ]; then
+		PrintMessage "--> module <$mod>"
+	else
+		PrintMessage "--> alias <$mod> for module <${mod_module_map[$mod]}>"
+	fi
+
+	PrintMessage "--> <${mod_module_map[$mod]}>"
+	SourceFiles ${mod_module_map[$mod]}
 	for task in $todo_tasks
 	do
 		PrintMessage "----> $task"

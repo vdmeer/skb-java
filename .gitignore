@@ -2,8 +2,5 @@ target/
 .source-tcsh.gen
 .project
 .settings
-modules/
 _intern/
 _tests/
-modules/tribe
-
