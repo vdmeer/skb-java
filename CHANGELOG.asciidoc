@@ -1,0 +1,10 @@
+v2.0.0 - release - 2015-##-##
+-----------------------------
+* full version of module scripting environment
+* scripts for cloning and setting up the SKB localle
+
+
+pre v2.0.0 (2007-1015)
+----------------------
+* building the Skb_TextUtils
+* historic version remains on GitHub: https://github.com/vdmeer/skb-historic
