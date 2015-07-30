@@ -5,13 +5,10 @@
 	<version>0.0.5</version>
 	<packaging>pom</packaging>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<encoding>UTF-8</encoding>
-		<file.encoding>UTF-8</file.encoding>
-	</properties>
+	<name>SKB</name>
+	<url>https://github.com/vdmeer/skb-java</url>
+	<description>Base of the Java SKB</description>
+	<inceptionYear>2010</inceptionYear>
 
 	<licenses>
 		<license>
@@ -35,13 +32,8 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-	<prerequisites>
-		<maven>3.0.0</maven>
-	</prerequisites>
-
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -93,7 +85,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

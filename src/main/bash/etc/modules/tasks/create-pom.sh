@@ -47,11 +47,16 @@ echo -n "" > $out_fn_fqpn
 
 pom_fn_fqpn=$skb_module_directory/pom.xml
 
-cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
-	cat $MOD_ETC_POMART_DIR/modelVersion.xml >> $out_fn_fqpn
+cat $MOD_ETC_POMART_DIR/project-open.skb >> $out_fn_fqpn
+	cat $MOD_ETC_POMART_DIR/modelVersion.skb >> $out_fn_fqpn
 	echo "	<groupId>$MVN_GROUP_ID</groupId>" >> $out_fn_fqpn
 	echo "	<artifactId>$skb_module_artifact</artifactId>" >> $out_fn_fqpn
 	echo "	<version>$skb_module_version</version>" >> $out_fn_fqpn
+	if [[ $skb_module_packaging && ${skb_module_packaging-_} ]]; then
+		echo "	<packaging>$skb_module_packaging</packaging>" >> $out_fn_fqpn
+	else
+		echo "	<packaging>jar</packaging>" >> $out_fn_fqpn
+	fi
 	echo "" >> $out_fn_fqpn
 
 	echo "	<name>$skb_module_name</name>" >> $out_fn_fqpn
@@ -67,17 +72,17 @@ cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 		echo "		<project.resources.sourceEncoding>$skb_module_properties_encoding</project.resources.sourceEncoding>" >> $out_fn_fqpn
 		echo "		<encoding>$skb_module_properties_encoding</encoding>" >> $out_fn_fqpn
 		echo "		<file.encoding>$skb_module_properties_encoding</file.encoding>" >> $out_fn_fqpn
-		cat $MOD_ETC_POMART_DIR/properties.xml >> $out_fn_fqpn
+		cat $MOD_ETC_POMART_DIR/properties.skb >> $out_fn_fqpn
 	echo "	</properties>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
-	cat $MOD_ETC_POMART_DIR/licence.xml >> $out_fn_fqpn
+	cat $MOD_ETC_POMART_DIR/licence.skb >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
-	cat $MOD_ETC_POMART_DIR/prerequisites.xml >> $out_fn_fqpn
+	cat $MOD_ETC_POMART_DIR/prerequisites.skb >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
-	cat $MOD_ETC_POMART_DIR/distributionManagement.xml >> $out_fn_fqpn
+	cat $MOD_ETC_POMART_DIR/distributionManagement.skb >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
 	echo "	<scm>" >> $out_fn_fqpn
@@ -95,15 +100,15 @@ cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
 	echo "	<developers>" >> $out_fn_fqpn
-		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-developers.xml ] ; then
-			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-developers.xml >> $out_fn_fqpn
+		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/developers.skb ] ; then
+			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/developers.skb >> $out_fn_fqpn
 		fi
 	echo "	</developers>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
 	echo "	<contributors>" >> $out_fn_fqpn
-		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-contributors.xml ] ; then
-			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-contributors.xml >> $out_fn_fqpn
+		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/contributors.skb ] ; then
+			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/contributors.skb >> $out_fn_fqpn
 		fi
 	echo "	</contributors>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
@@ -118,35 +123,42 @@ cat $MOD_ETC_POMART_DIR/project-open.xml >> $out_fn_fqpn
 			echo "			<version>${!_v}</version>" >> $out_fn_fqpn
 			echo "		</dependency>" >> $out_fn_fqpn
 		done
-		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-dependencies.xml ] ; then
-			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-dependencies.xml >> $out_fn_fqpn
+		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/dependencies.skb ] ; then
+			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/dependencies.skb >> $out_fn_fqpn
 		fi
 	echo "	</dependencies>" >> $out_fn_fqpn
 	echo "" >> $out_fn_fqpn
 
 	echo "	<build>" >> $out_fn_fqpn
 	echo "		<plugins>" >> $out_fn_fqpn
-	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-plugins.xml ] ; then
-		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$skb_module_artifact-plugins.xml >> $out_fn_fqpn
+	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugins.skb ] ; then
+		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugins.skb >> $out_fn_fqpn
 	fi
-	cat $MOD_ETC_POMART_DIR/plugin-jar.xml >> $out_fn_fqpn
-	cat $MOD_ETC_POMART_DIR/plugin-compiler.xml >> $out_fn_fqpn
-	cat $MOD_ETC_POMART_DIR/plugin-javadoc.xml >> $out_fn_fqpn
-	#cat $MOD_ETC_POMART_DIR/plugin-dependency.xml >> $out_fn_fqpn
-	cat $MOD_ETC_POMART_DIR/plugin-sourcejar.xml >> $out_fn_fqpn
+	cat $MOD_ETC_POMART_DIR/plugin-jar.skb >> $out_fn_fqpn
+	cat $MOD_ETC_POMART_DIR/plugin-compiler.skb >> $out_fn_fqpn
+
+	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugin-javadoc.skb ] ; then
+		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugin-javadoc.skb >> $out_fn_fqpn
+	else
+		cat $MOD_ETC_POMART_DIR/plugin-javadoc.skb >> $out_fn_fqpn
+	fi
+
+	#cat $MOD_ETC_POMART_DIR/plugin-dependency.skb >> $out_fn_fqpn
+	cat $MOD_ETC_POMART_DIR/plugin-sourcejar.skb >> $out_fn_fqpn
 	echo "		</plugins>" >> $out_fn_fqpn
 	echo "	</build>" >> $out_fn_fqpn
+	echo "" >> $out_fn_fqpn
 
-	if [[ $skb_module_packaging && ${skb_module_packaging-_} ]]; then
-		echo "	<packaging>$skb_module_packaging</packaging>" >> $out_fn_fqpn
-	else
-		echo "	<packaging>jar</packaging>" >> $out_fn_fqpn
+	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/modules.skb ] ; then
+		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/modules.skb >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
 	fi
 
-	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$1-profiles.xml ] ; then
-		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/$1-profiles.xml >> $out_fn_fqpn
+	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/profiles.skb ] ; then
+		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/profiles.skb >> $out_fn_fqpn
+		echo "" >> $out_fn_fqpn
 	fi
 
-cat $MOD_ETC_POMART_DIR/project-close.xml >> $out_fn_fqpn
+cat $MOD_ETC_POMART_DIR/project-close.skb >> $out_fn_fqpn
 
 cat $out_fn_fqpn > $pom_fn_fqpn

@@ -1,0 +1,29 @@
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.1</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<overview>overview.html</overview>
+					<nohelp>true</nohelp>
+					<header>SKB, ${project.version}</header>
+					<footer>SKB, ${project.version}</footer>
+					<doctitle>SKB, ${project.version}</doctitle>
+					<groups>
+						<group>
+							<title>SKB - All</title>
+							<packages>de.vandermeer.skb*:de.vandermeer.svg2vector</packages>
+						</group>
+<!--
+						<group>
+							<title>Vector Formats</title>
+							<packages>org.freehep.graphicsio.emf*:org.freehep.graphicsio.pdf*:org.freehep.graphicsio.ps*:org.freehep.graphicsio.svg*:org.freehep.graphicsio.swf*</packages>
+						</group>
+						<group>
+							<title>Bitmap Formats</title>
+							<packages>org.freehep.graphicsio.gif*:org.freehep.graphicsio.png*:org.freehep.graphicsio.ppm*:org.freehep.graphicsio.raw*</packages>
+						</group>
+-->
+					</groups>
+				</configuration>
+			</plugin>
