@@ -171,14 +171,14 @@ init()
 	for moddir in `echo $PROJECT_MODULES | sed -e 's/:/ /g'`
 	do
 		if [ ! -d $moddir ]; then
-			echo "------> ignoring path that does not exist -> $moddir"; continue
+			echo "---> ignoring path that does not exist -> $moddir"; continue
 		fi
 		if [ ! -d $moddir/$MOD_MODULE_SETTINGS_DIR ]; then
-			echo "------> ignoring path that does not contain directory 'src/main/module' -> $moddir"; continue
+			echo "---> ignoring path that does not contain directory 'src/main/module' -> $moddir"; continue
 		fi
 		local numSettingFiles=`ls -1U $moddir/$MOD_MODULE_SETTINGS_DIR/ | grep .settings | wc -l`
 		if [ "1" != "$numSettingFiles" ]; then
-			echo "------> ignoring path with $numSettingFiles settings file in 'src/main/module' -> $moddir"; continue
+			echo "---> ignoring path with $numSettingFiles settings file in 'src/main/module' -> $moddir"; continue
 		fi
 
 		local modSettingFile=$moddir/$MOD_MODULE_SETTINGS_DIR/`ls -1U $moddir/$MOD_MODULE_SETTINGS_DIR/ | grep .settings`
@@ -235,9 +235,9 @@ init()
 
 		# echo some success message
 		if [ -z $skb_module_alias ]; then
-			echo "----> processed <$modName> -> $moddir"
+			echo "-> processed <$modName> -> $moddir"
 		else
-			echo "----> processed <$modName> with alias <$skb_module_alias> -> $moddir"
+			echo "-> processed <$modName> with alias <$skb_module_alias> -> $moddir"
 		fi
 	done
 }
