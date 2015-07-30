@@ -1,37 +1,39 @@
 #!/bin/bash
 
-if [ ! -d modules ]; then
-	mkdir modules
+moddir=../
+
+if [ ! -d $moddir ]; then
+	mkdir $moddir
 fi
 
-if [ ! -d modules/execs ]; then
-	(cd modules; git clone https://github.com/vdmeer/execs.git)
+if [ ! -d $moddir/execs ]; then
+	(cd $moddir; git clone https://github.com/vdmeer/execs.git)
 fi
 
-if [ ! -d modules/asciitable ]; then
-	(cd modules; git clone https://github.com/vdmeer/asciitable.git)
+if [ ! -d $moddir/asciitable ]; then
+	(cd $moddir; git clone https://github.com/vdmeer/asciitable.git)
 fi
 
-if [ ! -d modules/svg2vector ]; then
-	(cd modules; git clone https://github.com/vdmeer/svg2vector.git)
+if [ ! -d $moddir/svg2vector ]; then
+	(cd $moddir; git clone https://github.com/vdmeer/svg2vector.git)
 fi
 
-if [ ! -d modules/base ]; then
-	(cd modules; git clone https://github.com/vdmeer/skb-java-base.git base)
+if [ ! -d $moddir/base ]; then
+	(cd $moddir; git clone https://github.com/vdmeer/skb-java-base.git base)
 fi
 
-if [ ! -d modules/categories ]; then
-	(cd modules; git clone https://github.com/vdmeer/skb-java-categories.git categories)
+if [ ! -d $moddir/categories ]; then
+	(cd $moddir; git clone https://github.com/vdmeer/skb-java-categories.git categories)
 fi
 
-if [ ! -d modules/commons ]; then
-	(cd modules; git clone https://github.com/vdmeer/skb-java-commons.git commons)
+if [ ! -d $moddir/commons ]; then
+	(cd $moddir; git clone https://github.com/vdmeer/skb-java-commons.git commons)
 fi
 
-if [ ! -d modules/configuration ]; then
-	(cd modules; git clone https://github.com/vdmeer/skb-java-configuration.git configuration)
+if [ ! -d $moddir/configuration ]; then
+	(cd $moddir; git clone https://github.com/vdmeer/skb-java-configuration.git configuration)
 fi
 
-if [ ! -d modules/examples ]; then
-	(cd modules; git clone https://github.com/vdmeer/skb-java-examples.git examples)
+if [ ! -d $moddir/examples ]; then
+	(cd $moddir; git clone https://github.com/vdmeer/skb-java-examples.git examples)
 fi

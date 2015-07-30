@@ -4,7 +4,8 @@ grep -v '^#' env.settings | awk -F'\n' 'length { print $1 }' | awk -F' ' '{ prin
 source .source-tcsh.gen
 
 setenv PROJECT_MODULES 
-foreach dir (`\ls modules`)
-	setenv PROJECT_MODULES "$PROJECT_MODULES `echo $PWD`/modules/$dir"
+set lspw=`(cd ..;echo $PWD)`
+foreach dir (`(cd ..;\ls)`)
+	setenv PROJECT_MODULES "$PROJECT_MODULES $lspw/$dir"
 end
-setenv PROJECT_MODULES "$PROJECT_MODULES `echo $PWD`"
+#setenv PROJECT_MODULES "$PROJECT_MODULES `echo $PWD`"

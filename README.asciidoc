@@ -32,8 +32,6 @@ Currently, there are the followin SKB-Java projects:
 	(link:https://github.com/vdmeer/skb-java-base[github], link:../base/README.html[local])
 * skb-categories	Interfaces that build hiearchies of categories, e.g. for keys, values, lists, options, DSLs
 	(link:https://github.com/vdmeer/skb-java-categories[github], link:../categories/README.html[local])
-* skb-collections	Set of classes handling Java collections
-	(link:https://github.com/vdmeer/skb-java-collections[github], link:../collections/README.html[local])
 * skb-commons		Common classes for tables and trees, plus utility classes such as ReportManager, CLI parser
 	(link:https://github.com/vdmeer/skb-java-commons[github], link:../commons/README.html[local])
 * skb-composite		Base classes for implementing the composite pattern, including Special Objects
@@ -45,7 +43,7 @@ Currently, there are the followin SKB-Java projects:
 
 Use
 ~~~
-The +SKB+ projects are (will) be published at the Central Repository.
+The +SKB+ projects are published at the link:https://search.maven.org/[Central Repository].
 Simply use the dependency information for your preferred dependency manager.
 They are all published under +de.vandermeer+.
 For a list see the link:https://search.maven.org/#search%7Cga%7C1%7Cvandermeer[Central Repository]
@@ -57,12 +55,25 @@ Old, obsolete projects:
 * svg2emf - now in svg2vector
 * skb-asciitable - now asciitable
 * skb-execs - now execs
+* skb-collections - now in skb-base
+
+
+Clone
+~~~~~
+Create a directory for the skb, clone the main +SKB+ project (this one) and then use provided commands to clone the rest.
+----------
+# mkdir skb-java
+# git clone https://github.com/vdmeer/skb-java.git skb
+# cd skb
+# ./clone-modules
+----------
 
 
 Development
 ~~~~~~~~~~~
-Eclipse settings (classpath and project files) plus settings for maven files are part of each repository.
-Since the POM files are independent, simply import the Maven projects into Eclipse and build them.
+For Eclipse simply import the maven projects. Individual projects have independent POM files.
+The +SKB+ POM is not used as a parent.
+
 To use Eclipse, do the following:
 
 * Get a Java SE Eclipse distribution from http://www.eclipse.org/downloads/, latest version tested is Juno SR 1
@@ -79,3 +90,18 @@ To use Eclipse, do the following:
 Build
 ~~~~~
 Simply use Maven 3 on the command line to build the repositories.
+
+
+
+Module Script
+~~~~~~~~~~~~~
+The +SKB+ provides a script tool called modules in +src/main/bash+.
+This script can be used to maintain POM files, set file versions, etc.
+
+To use the script change the settings in +env.settings+ to your liking.
+Use +source-bash+ or +source-tcsh+ to load environments, then call +src/main/bash/bin/module+.
+The source scripts will set the modules automatically.
+
+The module script can be used in other projects, simply copy the +bash/bin+ and +bash/etc+ folders.
+The script uses relative paths, so no change in the script is needed when copied.
+The only assumption is that there is a +bin+ and +etc+ directory in the same root.

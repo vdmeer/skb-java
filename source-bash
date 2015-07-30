@@ -10,8 +10,9 @@ do
 done < env.settings
 
 PROJECT_MODULES=
-for mod in `ls modules`
+lspw=`(cd ..;pwd)`
+for mod in `(cd ..;ls)`
 do
-	PROJECT_MODULES+=" `pwd`/modules/$mod"
+	PROJECT_MODULES+=" $lspw/$mod"
 done
-PROJECT_MODULES+=" `pwd`"
+#PROJECT_MODULES+=" `pwd`"
