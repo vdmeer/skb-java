@@ -25,7 +25,6 @@
 ## @version    v2.0.0 build 150812 (12-Aug-15)
 
 ##
-## call with
 ## call with sourced settings file
 ##
 
