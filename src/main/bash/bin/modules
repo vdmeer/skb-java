@@ -84,7 +84,7 @@ fi
 
 
 ## module settings dir
-export MOD_MODULE_SETTINGS_DIR=src/main/module
+export MOD_MODULE_SETTINGS_DIR=src/module
 
 #### Project name for printouts
 ####project_name=`echo ${PWD##*/} | tr '[:lower:]' '[:upper:]'`
@@ -167,7 +167,7 @@ init()
 		echo "$MOD_SCRIPT_NAME: no modules defined"
 		echo " --> create environment variable \$PROJECT_MODULES and add paths to modules, one per line, separated by colon or space"
 		echo " --> a path needs to be absolute"
-		echo " --> a path needs to point to a directory in a maven project that ends with 'src/main/module'"
+		echo " --> a path needs to point to a directory in a maven project that ends with '$MOD_MODULE_SETTINGS_DIR'"
 		echo " --> in the folder the path points to should be 1 (only 1) directory with having the name of the module"
 		echo " --> in the folder of the module name must be a file <module-name>.settings"
 		echo ""
@@ -186,13 +186,13 @@ init()
 
 		echo -n "."
 		if [ ! -d $moddir/$MOD_MODULE_SETTINGS_DIR ]; then
-			echo "---> ignoring path that does not contain directory 'src/main/module' -> $moddir"; continue
+			echo "---> ignoring path that does not contain directory '$MOD_MODULE_SETTINGS_DIR' -> $moddir"; continue
 		fi
 
 		echo -n "."
 		local numSettingFiles=`ls -1U $moddir/$MOD_MODULE_SETTINGS_DIR/ | grep .settings | wc -l`
 		if [ "1" != "$numSettingFiles" ]; then
-			echo "---> ignoring path with $numSettingFiles settings file in 'src/main/module' -> $moddir"; continue
+			echo "---> ignoring path with $numSettingFiles settings file in '$MOD_MODULE_SETTINGS_DIR' -> $moddir"; continue
 		fi
 
 		echo -n "."
