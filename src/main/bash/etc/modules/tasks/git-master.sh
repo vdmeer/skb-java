@@ -29,6 +29,8 @@
 ##
 
 (cd $skb_module_directory; vi src/bundle/doc/CHANGELOG.asciidoc)
+(cd $skb_module_directory; vi src/bundle/doc/README.asciidoc)
+
 
 (cd $skb_module_directory; git add .)
 (cd $skb_module_directory; git commit -m "final edits for v${skb_module_version}" .)
