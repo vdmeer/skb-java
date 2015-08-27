@@ -146,7 +146,7 @@
 				<version>2.10.1</version>
 				<configuration>
 					<aggregate>true</aggregate>
-					<overview>overview.html</overview>
+					<overview>${basedir}/src/main/javadoc/overview.html</overview>
 					<nohelp>true</nohelp>
 					<header>SKB, ${project.version}</header>
 					<footer>SKB, ${project.version}</footer>
@@ -167,6 +167,9 @@
 						</group>
 -->
 					</groups>
+
+					<docfilessubdirs>true</docfilessubdirs>
+					<javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
 				</configuration>
 			</plugin>
 			<plugin>
