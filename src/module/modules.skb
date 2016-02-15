@@ -1,10 +1,15 @@
 	<modules>
 		<module>../execs</module>
+		<module>../asciilist</module>
 		<module>../asciitable</module>
 		<module>../svg2vector</module>
 		<module>../base</module>
 		<module>../categories</module>
+<!--
 		<module>../commons</module>
+-->
 		<module>../configuration</module>
 		<module>../examples</module>
+
+		<module>../datatool</module>
 	</modules>

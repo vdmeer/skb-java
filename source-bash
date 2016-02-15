@@ -16,3 +16,4 @@ do
 	PROJECT_MODULES+=" $lspw/$mod"
 done
 #PROJECT_MODULES+=" `pwd`"
+export PROJECT_MODULES

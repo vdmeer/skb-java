@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="sahara" default="set-versions">
-	<!-- e.g. = modules/sahara-dpi.settings -->
+<project name="skb" default="set-versions">
+	<!-- e.g. = modules/dpi.settings -->
 	<!-- ant -f ant-macros/version.build.xml -DmoduleFile=../modules/skb-base.settings -DmoduleDir=/dev/skb/skb-base -->
 	<property file="${moduleFile}"/>
 

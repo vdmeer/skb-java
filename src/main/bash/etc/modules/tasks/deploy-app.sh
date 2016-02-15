@@ -43,7 +43,7 @@ if [ -d "$skb_module_directory/target/application" ] ; then
 			cp $skb_module_directory/target/application/$tarfile $PROJECT_APPS_DIR/$skb_module_appdir_name
 			(cd $PROJECT_APPS_DIR/$skb_module_appdir_name; tar xvfz $tarfile)
 			(cd $PROJECT_APPS_DIR/$skb_module_appdir_name; rm $tarfile)
-			(cd $PROJECT_APPS_DIR/$skb_module_appdir_name/bin; init.sh)
+			(cd $PROJECT_APPS_DIR/$skb_module_appdir_name/bin; ./init.sh)
 		done
 	else
 		echo "------> deployment directory does not exist: ${PROJECT_APPS_DIR}"

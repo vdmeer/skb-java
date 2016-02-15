@@ -84,7 +84,7 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>1.5.2</version>
+				<version>1.5.3</version>
 				<executions>
 					<execution>
 						<id>bundle-asciidoc</id>
@@ -190,13 +190,18 @@
 
 	<modules>
 		<module>../execs</module>
+		<module>../asciilist</module>
 		<module>../asciitable</module>
 		<module>../svg2vector</module>
 		<module>../base</module>
 		<module>../categories</module>
+<!--
 		<module>../commons</module>
+-->
 		<module>../configuration</module>
 		<module>../examples</module>
+
+		<module>../datatool</module>
 	</modules>
 
 	<profiles>

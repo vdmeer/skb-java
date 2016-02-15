@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Copyright 2014-2015 Sven van der Meer <vdmeer.sven@mykolab.com>
+## Copyright 2014-2016 Sven van der Meer <vdmeer.sven@mykolab.com>
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 ##
 ## @package    de.vandermeer.skb
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
-## @copyright  2014-2015 Sven van der Meer
+## @copyright  2014-2016 Sven van der Meer
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
 ## @version    v2.0.0 build 150729 (29-Jul-15)
 ##
@@ -181,12 +181,12 @@ init()
 	do
 		echo -n "."
 		if [ ! -d $moddir ]; then
-			echo "---> ignoring path that does not exist -> $moddir"; continue
+			echo "---> ignoring not existing path -> $moddir"; continue
 		fi
 
 		echo -n "."
 		if [ ! -d $moddir/$MOD_MODULE_SETTINGS_DIR ]; then
-			echo "---> ignoring path that does not contain directory '$MOD_MODULE_SETTINGS_DIR' -> $moddir"; continue
+			echo "---> ignoring path w/o directory '$MOD_MODULE_SETTINGS_DIR' -> $moddir"; continue
 		fi
 
 		echo -n "."
@@ -257,9 +257,11 @@ init()
 		echo -n "."
 		# echo some success message
 		if [ -z $skb_module_alias ]; then
-			echo " -> processed <$modName> -> $moddir"
+			echo " -> processed <$modName>"
+			##echo " -> processed <$modName> -> $moddir"
 		else
-			echo " -> processed <$modName> with alias <$skb_module_alias> -> $moddir"
+			echo " -> processed <$modName> with alias <$skb_module_alias>"
+			##echo " -> processed <$modName> with alias <$skb_module_alias> -> $moddir"
 		fi
 	done
 }
@@ -422,11 +424,13 @@ do
 	for task in $todo_tasks
 	do
 
-		if [ "$mod" == "${mod_module_map[$mod]}" ]; then
-			echo -n "-> $task for <$mod> "
-		else
-			echo -n "-> $task for <$mod[${mod_module_map[$mod]}]> "
-		fi
+		##if [ "$mod" == "${mod_module_map[$mod]}" ]; then
+		##	echo -n "-> $task for <$mod> "
+		##else
+		##	echo -n "-> $task for <$mod[${mod_module_map[$mod]}]> "
+		##fi
+		echo -n "-> $task for <$mod> "
+
 		$MOD_ETC_TASKS_DIR/$task.sh
 		echo ""
 	done

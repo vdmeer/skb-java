@@ -12,32 +12,28 @@
   <property name="project-type" value="maven" />
   <property name="hide-externals" value="true" />
   <classpath>
-    <classpathentry kind="lib" path="../../../configuration/target/classes" />
-    <classpathentry kind="lib" path="../../../configuration/target/test-classes" />
-    <classpathentry kind="lib" path="../../../svg2vector/target/classes" />
-    <classpathentry kind="lib" path="../../../svg2vector/target/test-classes" />
-    <classpathentry kind="lib" path="../../../execs/target/classes" />
-    <classpathentry kind="lib" path="../../../execs/target/test-classes" />
-    <classpathentry kind="lib" path="../../../categories/target/classes" />
-    <classpathentry kind="lib" path="../../../categories/target/test-classes" />
-    <classpathentry kind="lib" path="../../../base/target/classes" />
+    <classpathentry kind="lib" path="../../../base/target/skb-base-0.1.5.jar" />
     <classpathentry kind="lib" path="../../../base/target/test-classes" />
-    <classpathentry kind="lib" path="../../../examples/target/classes" />
+    <classpathentry kind="lib" path="../../../svg2vector/target/svg2vector-1.0.2.jar" />
+    <classpathentry kind="lib" path="../../../svg2vector/target/test-classes" />
+    <classpathentry kind="lib" path="../../../execs/target/execs-0.3.0.jar" />
+    <classpathentry kind="lib" path="../../../execs/target/test-classes" />
+    <classpathentry kind="lib" path="../../../configuration/target/skb-configuration-0.0.4.jar" />
+    <classpathentry kind="lib" path="../../../configuration/target/test-classes" />
+    <classpathentry kind="lib" path="../../../examples/target/skb-examples-0.0.6.jar" />
     <classpathentry kind="lib" path="../../../examples/target/test-classes" />
-    <classpathentry kind="lib" path="../../../collections/target/classes" />
-    <classpathentry kind="lib" path="../../../collections/target/test-classes" />
-    <classpathentry kind="lib" path="../../../commons/target/classes" />
-    <classpathentry kind="lib" path="../../../commons/target/test-classes" />
-    <classpathentry kind="lib" path="../../../asciitable/target/classes" />
+    <classpathentry kind="lib" path="../../../asciilist/target/asciilist-0.0.2.jar" />
+    <classpathentry kind="lib" path="../../../asciilist/target/test-classes" />
+    <classpathentry kind="lib" path="../../../asciitable/target/asciitable-0.2.3.jar" />
     <classpathentry kind="lib" path="../../../asciitable/target/test-classes" />
-    <classpathentry kind="lib" path="../../../composite/target/classes" />
-    <classpathentry kind="lib" path="../../../composite/target/test-classes" />
+    <classpathentry kind="lib" path="../../../categories/target/skb-categories-0.0.4.jar" />
+    <classpathentry kind="lib" path="../../../categories/target/test-classes" />
   </classpath>
   <pom-root-files>
     <pom path="../../pom.xml" />
   </pom-root-files>
   <excludes>
-    <exclude expression="skb.java.*.test-classes.*" active="true" />
+    <exclude expression="*.Test*" active="true" />
   </excludes>
   <transformations>
     <transformation in="*" out="{jar}.*" />
@@ -45,63 +41,15 @@
   <restructuring>
     <set version="3" name="Model 1" hiview="Codemap" active="true" todo="false" list="0" />
   </restructuring>
-  <grid-set sep="." version="4.1.5501">
-    <grid name="Diagram 1" enforce="true" locked="true" strict="false" excludes="">
-      <row>
-        <cell name="skb.java" pattern="" vexpanded="true" visibility="public" drill="true">
-          <grid>
-            <row>
-              <cell name="skb.commons" pattern="skb.java.skb.commons.*" vexpanded="false" visibility="public" drill="true" />
-            </row>
-            <row>
-              <cell name="skb.composite" pattern="skb.java.skb.composite.*" vexpanded="false" visibility="public" drill="true" />
-              <cell name="skb.configuration" pattern="skb.java.skb.configuration.*" vexpanded="false" visibility="public" drill="true" />
-            </row>
-            <row>
-              <cell name="skb.categories" pattern="skb.java.skb.categories.*" vexpanded="true" visibility="public" drill="true">
-                <grid>
-                  <row>
-                    <cell name="test-classes" pattern="skb.java.skb.categories.test-classes.*" vexpanded="false" visibility="public" drill="false" />
-                  </row>
-                  <row>
-                    <cell name="categories" pattern="skb.java.skb.categories.categories.*" vexpanded="false" visibility="public" drill="false" />
-                  </row>
-                </grid>
-              </cell>
-            </row>
-            <row>
-              <cell name="skb.collections" pattern="skb.java.skb.collections.*" vexpanded="false" visibility="public" drill="true">
-                <grid>
-                  <row>
-                    <cell name="test-classes" pattern="skb.java.skb.collections.test-classes.*" vexpanded="false" visibility="public" drill="false" />
-                  </row>
-                  <row>
-                    <cell name="collections" pattern="skb.java.skb.collections.collections.*" vexpanded="false" visibility="public" drill="false" />
-                  </row>
-                </grid>
-              </cell>
-              <cell name="skb.examples" pattern="skb.java.skb.examples.*" vexpanded="false" visibility="public" drill="true" />
-            </row>
-            <row>
-              <cell name="asciitable" pattern="skb.java.asciitable.*" vexpanded="false" visibility="public" drill="true" />
-              <cell name="execs" pattern="skb.java.execs.*" vexpanded="false" visibility="public" drill="true" />
-              <cell name="skb.base" pattern="skb.java.skb.base.*" vexpanded="false" visibility="public" drill="true" />
-              <cell name="svg2vector" pattern="skb.java.svg2vector.*" vexpanded="false" visibility="public" drill="true">
-                <grid>
-                  <row>
-                    <cell name="test-classes" pattern="skb.java.svg2vector.test-classes.*" vexpanded="false" visibility="public" drill="false" />
-                  </row>
-                  <row>
-                    <cell name="svg2vector" pattern="skb.java.svg2vector.svg2vector.*" vexpanded="false" visibility="public" drill="false" />
-                  </row>
-                </grid>
-              </cell>
-            </row>
-          </grid>
-        </cell>
-      </row>
-      <description>Generated from LSM "Model 1"</description>
-    </grid>
-  </grid-set>
+  <sourcepaths>
+    <pathentry type="file" path="/mnt/shares/vdm/dev/github/skb-java/base/src/main/java" />
+    <pathentry type="file" path="/mnt/shares/vdm/dev/github/skb-java/svg2vector/src/main/java" />
+    <pathentry type="file" path="/mnt/shares/vdm/dev/github/skb-java/execs/src/main/java" />
+    <pathentry type="file" path="/mnt/shares/vdm/dev/github/skb-java/configuration/src/main/java" />
+    <pathentry type="file" path="/mnt/shares/vdm/dev/github/skb-java/examples/src/main/java" />
+    <pathentry type="file" path="/mnt/shares/vdm/dev/github/skb-java/asciilist/src/main/java" />
+    <pathentry type="file" path="/mnt/shares/vdm/dev/github/skb-java/asciitable/src/main/java" />
+    <pathentry type="file" path="/mnt/shares/vdm/dev/github/skb-java/categories/src/main/java" />
+  </sourcepaths>
 </local-project>
 

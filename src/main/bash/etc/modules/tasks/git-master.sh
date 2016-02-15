@@ -37,7 +37,9 @@
 (cd $skb_module_directory; git push origin dev)
 
 (cd $skb_module_directory; git checkout master)
-(cd $skb_module_directory; git merge --no-ff dev)
+(cd $skb_module_directory; git commit -m "final edits for v${skb_module_version}" .)
+(cd $skb_module_directory; git push origin master)
+(cd $skb_module_directory; git merge --no-ff -s recursive -X theirs dev)
 (cd $skb_module_directory; git branch -d dev)
 
 if [ -z "$skb_module_alias" ]; then
