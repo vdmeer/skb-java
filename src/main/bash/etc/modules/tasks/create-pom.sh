@@ -27,12 +27,22 @@
 ##
 ## call with sourced settings file
 ## requires MVN_GROUP_ID set for maven groudID
+## requires MOD_FILE_BUILD_VERSIONS_BASH for automatic handling of external dependencies
 ##
 
 if [ -z "$MVN_GROUP_ID" ]; then
 	echo ""
 	echo " ---> no groupId set, use \$MVN_GROUP_ID"
 	exit 255
+fi
+
+if [ -z "$MOD_FILE_BUILD_VERSIONS_BASH" ]; then
+	echo ""
+	echo " ---> no build version file set, automatic generation of external dependencies will fail"
+	echo "    --> use \$PROJECT_BUILD_VERSION_FILE when initializing the modules"
+	exit 255
+else
+	source $MOD_FILE_BUILD_VERSIONS_BASH
 fi
 
 source $MOD_FILE_VERSION_BASH
@@ -130,6 +140,7 @@ cat $MOD_ETC_POMART_DIR/project-open.skb >> $out_fn_fqpn
 
 	echo -n "."
 	echo "	<dependencies>" >> $out_fn_fqpn
+		## first do all internal dependencies, we know the versions of them
 		for intdep in $skb_module_internalDependencies
 		do
 			_v=`echo $intdep | sed -e 's/\-/_/g'`_version
@@ -139,6 +150,73 @@ cat $MOD_ETC_POMART_DIR/project-open.skb >> $out_fn_fqpn
 			echo "			<version>${!_v}</version>" >> $out_fn_fqpn
 			echo "		</dependency>" >> $out_fn_fqpn
 		done
+		## now do the external dependencies for compile scope
+		if [ -n "$skb_module_externalDependencies_compile" ]; then
+			for extdep in $skb_module_externalDependencies_compile
+			do
+				if [ -z "_ed$extdep" ]; then
+					echo "external compile dependency not set: ${extdep}"
+				else
+					echo -n "."
+					## get the actual content from the sourced variable
+					## indirections work like this: http://www.tldp.org/LDP/abs/html/ivr.html
+					_name="_ed${extdep}"
+					eval _name=\$$_name
+					_arr=$(echo $_name | tr " " "\n")
+
+					echo "		<dependency>" >> $out_fn_fqpn
+					count=1
+					for _elem in $_arr
+					do
+						if [ "$count" -eq 1 ]; then
+							echo "			<groupId>$_elem</groupId>" >> $out_fn_fqpn
+						fi
+						if [ "$count" -eq 2 ]; then
+							echo "			<artifactId>$_elem</artifactId>" >> $out_fn_fqpn
+						fi
+						if [ "$count" -eq 3 ]; then
+							echo "			<version>$_elem</version>" >> $out_fn_fqpn
+						fi
+						count=$[$count + 1]
+					done
+					echo "		</dependency>" >> $out_fn_fqpn
+				fi
+			done
+		fi
+		## now do the external dependencies for test scope
+		if [ -n "$skb_module_externalDependencies_test" ]; then
+			for extdep in $skb_module_externalDependencies_test
+			do
+				if [ -z "_ed$extdep" ]; then
+					echo "external test dependency not set: ${extdep}"
+				else
+					echo -n "."
+					## get the actual content from the sourced variable
+					## indirections work like this: http://www.tldp.org/LDP/abs/html/ivr.html
+					_name="_ed${extdep}"
+					eval _name=\$$_name
+					_arr=$(echo $_name | tr " " "\n")
+
+					echo "		<dependency>" >> $out_fn_fqpn
+					count=1
+					for _elem in $_arr
+					do
+						if [ "$count" -eq 1 ]; then
+							echo "			<groupId>$_elem</groupId>" >> $out_fn_fqpn
+						fi
+						if [ "$count" -eq 2 ]; then
+							echo "			<artifactId>$_elem</artifactId>" >> $out_fn_fqpn
+						fi
+						if [ "$count" -eq 3 ]; then
+							echo "			<version>$_elem</version>" >> $out_fn_fqpn
+							echo "			<scope>test</scope>" >> $out_fn_fqpn
+						fi
+						count=$[$count + 1]
+					done
+					echo "		</dependency>" >> $out_fn_fqpn
+				fi
+			done
+		fi
 		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/dependencies.skb ] ; then
 			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/dependencies.skb >> $out_fn_fqpn
 		fi
