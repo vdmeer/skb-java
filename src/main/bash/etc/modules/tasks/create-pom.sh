@@ -151,20 +151,32 @@ cat $MOD_ETC_POMART_DIR/project-open.skb >> $out_fn_fqpn
 	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugins.skb ] ; then
 		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugins.skb >> $out_fn_fqpn
 	fi
-	cat $MOD_ETC_POMART_DIR/plugin-jar.skb >> $out_fn_fqpn
-	cat $MOD_ETC_POMART_DIR/plugin-compiler.skb >> $out_fn_fqpn
 
-	echo -n "."
-	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugin-javadoc.skb ] ; then
-		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugin-javadoc.skb >> $out_fn_fqpn
-	else
-		cat $MOD_ETC_POMART_DIR/plugin-javadoc.skb >> $out_fn_fqpn
+	#only add jar, javac and javadoc for non plugin projects
+	if [ "$skb_module_packaging" != "maven-plugin" ]; then
+		cat $MOD_ETC_POMART_DIR/plugin-jar.skb >> $out_fn_fqpn
+		cat $MOD_ETC_POMART_DIR/plugin-compiler.skb >> $out_fn_fqpn
+
+		echo -n "."
+		if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugin-javadoc.skb ] ; then
+			cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/plugin-javadoc.skb >> $out_fn_fqpn
+		else
+			cat $MOD_ETC_POMART_DIR/plugin-javadoc.skb >> $out_fn_fqpn
+		fi
+
+		echo -n "."
+		cat $MOD_ETC_POMART_DIR/plugin-sourcejar.skb >> $out_fn_fqpn
 	fi
 
-	echo -n "."
-	cat $MOD_ETC_POMART_DIR/plugin-sourcejar.skb >> $out_fn_fqpn
 	echo "		</plugins>" >> $out_fn_fqpn
 	echo "	</build>" >> $out_fn_fqpn
+	echo "" >> $out_fn_fqpn
+
+	if [ -f $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/reporting.skb ] ; then
+		echo "	<reporting>" >> $out_fn_fqpn
+		cat $skb_module_directory/$MOD_MODULE_SETTINGS_DIR/reporting.skb >> $out_fn_fqpn
+		echo "	</reporting>" >> $out_fn_fqpn
+	fi
 	echo "" >> $out_fn_fqpn
 
 	echo -n "."
