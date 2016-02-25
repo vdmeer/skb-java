@@ -20,11 +20,16 @@ echo "#" >> ${file}
 echo "" >> ${file}
 echo "PROJECT_HOME ${pwd}" >> ${file}
 echo "PROJECT_APPS_DIR ${pwd}/../applications" >> ${file}
+if [ -f src/module/build-versions.skb ];then
+	echo "PROJECT_BUILD_VERSION_FILE $PROJECT_HOME/src/module/build-versions.skb" >> ${file}
+else
+	echo "no build-versions.skb file found, automatic external dependency generation will not work"
+fi
 echo "MVN_GROUP_ID de.vandermeer" >> ${file}
 echo "" >> ${file}
 
 mkdir ../applications >& /dev/null
-mkdir /tmp/logs
-mkdir /tmp/logs/skb
+mkdir /tmp/logs >& /dev/null
+mkdir /tmp/logs/skb >& /dev/null
 
 exit 0

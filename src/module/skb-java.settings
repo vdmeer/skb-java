@@ -13,4 +13,6 @@ skb.module.scm.url=https://github.com/vdmeer/skb-java
 skb.module.issueManagement.url=https://github.com/vdmeer/skb-java/issues
 skb.module.issueManagement.system=github
 skb.module.internalDependencies=
+skb.module.externalDependencies.compile=
+skb.module.externalDependencies.test=
 skb.module.packaging=pom
