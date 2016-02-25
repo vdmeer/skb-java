@@ -1,5 +1,6 @@
 	<modules>
 		<module>../execs</module>
+		<module>../asciiparagraph</module>
 		<module>../asciilist</module>
 		<module>../asciitable</module>
 		<module>../svg2vector</module>
