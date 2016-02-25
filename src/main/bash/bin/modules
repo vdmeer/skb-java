@@ -59,7 +59,7 @@ export MOD_ETC_POMART_DIR=$MOD_ETC_DIR/pom-artifacts
 export MOD_TARGET_DIR=$PROJECT_HOME/target
 export MOD_TARGET_MODULES_DIR=$MOD_TARGET_DIR/modules
 
-## version file with BASH variable exports
+## version file (internal dependencies) with BASH variable exports
 export MOD_FILE_VERSION_BASH=$MOD_TARGET_MODULES_DIR/version.bash
 ## unset file for bash
 export MOD_FILE_UNSET_BASH=$MOD_TARGET_MODULES_DIR/unset.bash
@@ -67,6 +67,9 @@ export MOD_FILE_UNSET_BASH=$MOD_TARGET_MODULES_DIR/unset.bash
 ## generated file with available modules and aliases
 mod_file_modules=$MOD_TARGET_MODULES_DIR/mod_modules.list
 mod_file_aliases=$MOD_TARGET_MODULES_DIR/mod_aliases.list
+
+## build versions file (external dependencies) with BASH variable exports
+export MOD_FILE_BUILD_VERSIONS_BASH=$MOD_TARGET_MODULES_DIR/build-versions.bash
 
 ## mapping from aliasses to module names
 ## http://www.artificialworlds.net/blog/2012/10/17/bash-associative-array-examples/
@@ -160,6 +163,8 @@ init()
 	touch $mod_file_modules
 	echo -n "."
 	touch $mod_file_aliases
+	echo -n "."
+	touch $MOD_FILE_BUILD_VERSIONS_BASH
 
 	echo -n "."
 	if [ -z "$PROJECT_MODULES" ] ; then
@@ -209,7 +214,7 @@ init()
 		# read settings file and create bash sourceable file
 		`cat $modSettingFile | sed -e ':b; s/^\([^=]*\)*\./\1_/; tb;' -e 's/=/=\"/' -e 's/$/\"/' -e 's/^/export /' > $fn_out`
 		# read settings and create a bash unset file
-		`cat $modSettingFile | sed -e 's/=.*//' -e 's/\./_/g' -e 's/^/unset -v /' -e 's/$//' > $MOD_FILE_UNSET_BASH`
+		`cat $modSettingFile | sed -e 's/=.*//' -e 's/\./_/g' -e 's/^/unset -v /' -e 's/$//' >> $MOD_FILE_UNSET_BASH`
 
 		echo -n "."
 		#add directory to the settings file and to the unset file
@@ -264,6 +269,41 @@ init()
 			##echo " -> processed <$modName> with alias <$skb_module_alias> -> $moddir"
 		fi
 	done
+	sort -u $MOD_FILE_UNSET_BASH > target/_un
+	cat target/_un > $MOD_FILE_UNSET_BASH
+	rm target/_un
+
+
+	echo -n "."
+	# check if we have a build-version file with versions for external dependencies
+	# if we have one process the config file
+	if [ -z "$PROJECT_BUILD_VERSION_FILE" ]; then
+		## nothing to read, set bash file empty, just in case
+		echo > $MOD_FILE_BUILD_VERSIONS_BASH
+		echo "\$PROJECT_BUILD_VERSION_FILE not set, no automatic process of external dependencies"
+	else
+		if [ ! -f "$PROJECT_BUILD_VERSION_FILE" ]; then
+			## environment set, but file does not exist, set bash file empty, just in case
+			echo > $MOD_FILE_BUILD_VERSIONS_BASH
+			echo "build-versions file does not exist, please check: $PROJECT_BUILD_VERSION_FILE"
+		else
+			## something to read, let's go
+			echo -n "."
+			## first remove all empty lines
+			grep -v '^[[:space:]]*$' $PROJECT_BUILD_VERSION_FILE > $MOD_TARGET_DIR/_vb1
+			## now remove all comments (http://www.unix.com/shell-programming-and-scripting/20951-ignore-lines-begining.html)
+			grep -v '^[[:space:]]*#' $MOD_TARGET_DIR/_vb1 > $MOD_TARGET_DIR/_vb2
+			## now replace - and add export and write to bash sourcing file
+			## the "export _ed" is important, it changes the variable name from xxx to _edxxx!
+			`cat $MOD_TARGET_DIR/_vb2 | sed -e ':b; s/^\([^=]*\)*-/\1_/; tb;' -e 's/=/=\"/' -e 's/$/\"/' -e 's/^/export _ed/' > $MOD_FILE_BUILD_VERSIONS_BASH`
+			## remove the tmp files
+			rm $MOD_TARGET_DIR/_vb1
+			rm $MOD_TARGET_DIR/_vb2
+		fi
+	fi
+
+	echo ""
+	echo "finished"
 }
 
 
@@ -411,6 +451,7 @@ SourceFiles()
 	source $MOD_FILE_VERSION_BASH >& /dev/null
 	source $MOD_FILE_UNSET_BASH >& /dev/null
 	source $MOD_TARGET_MODULES_DIR/$1.bash >& /dev/null
+	source $MOD_FILE_BUILD_VERSIONS_BASH >& /dev/null
 }
 
 
