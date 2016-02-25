@@ -1,6 +1,6 @@
 #!/bin/bash
 
-moddir=../
+moddir=../../
 
 if [ ! -d $moddir ]; then
 	mkdir $moddir

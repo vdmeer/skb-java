@@ -13,7 +13,7 @@ fi
 if [ -z $module ]; then
 	echo -n "for everyting "
 else
-	if [ -d ../$module ]; then
+	if [ -d ../../$module ]; then
 		echo -n "for module <$module> "
 	else
 		echo ""
@@ -33,7 +33,7 @@ echo ""
 if [ -z $module ]; then
 	if [ -z $notest ]; then
 		##all w/tests
-		mvn $goal -DargLine="-Dfile.encoding=UTF-8 -Dlogback.configurationFile=../base/src/main/resources/logback.xml"
+		mvn $goal -DargLine="-Dfile.encoding=UTF-8 -Dlogback.configurationFile=../../base/src/main/resources/logback.xml"
 	else
 		##all w/o tests
 		mvn $goal -DskipTests
@@ -41,7 +41,7 @@ if [ -z $module ]; then
 else
 	if [ -z $notest ]; then
 		##mod w/tests
-		(cd ../$module ; mvn $goal -DargLine="-Dfile.encoding=UTF-8 -Dlogback.configurationFile=../base/src/main/resources/logback.xml")
+		(cd ../$module ; mvn $goal -DargLine="-Dfile.encoding=UTF-8 -Dlogback.configurationFile=../../base/src/main/resources/logback.xml")
 	else
 		##mod w/o tests
 		(cd ../$module ; mvn $goal -DskipTests)
