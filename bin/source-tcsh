@@ -1,0 +1,16 @@
+#!/usr/bin/tcsh
+
+grep -v '^#' bin/env.settings | awk -F'\n' 'length { print $1 }' | awk -F' ' '{ print "setenv " $1 " " $2 }' > .source-tcsh.gen
+source .source-tcsh.gen
+
+setenv PROJECT_MODULES 
+
+# get the main modules
+set lspw=`(cd ..;echo $PWD)`
+foreach dir (`(cd ..;\ls)`)
+	if ($dir =~ {applications,tribe}) then
+		continue
+	endif
+	setenv PROJECT_MODULES "$PROJECT_MODULES $lspw/$dir"
+end
+

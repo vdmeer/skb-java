@@ -1,0 +1,26 @@
+#!/bin/bash
+while IFS='
+' read line
+do
+	if [[ ! $line == \#* ]] && [[ ! ${#line} == 0 ]] ; then
+		VAR_NAME=`echo $line | awk -F " " '{print $1}'`
+		VAR_VAL=`echo $line | awk -F " " '{print $2}'`
+		export ${VAR_NAME}="${VAR_VAL}"
+	fi
+done < bin/env.settings
+
+PROJECT_MODULES=
+
+# get the main modules
+lspw=`(cd ..;pwd)`
+mainIgnore=(applications, tribe)
+for mod in `(cd ..;ls)`
+do
+	if [[ ${mainIgnore[@]} =~ ${mod} ]]; then
+		continue
+	fi
+	PROJECT_MODULES+=" $lspw/$mod"
+done
+
+export PROJECT_MODULES
+
