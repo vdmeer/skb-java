@@ -1,6 +1,8 @@
 target/
-.source-tcsh.gen
 .project
 .settings
 _intern/
 _tests/
+bin/env.settings
+bin/.source-tcsh.gen
+
