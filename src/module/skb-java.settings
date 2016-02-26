@@ -1,8 +1,8 @@
-skb.module.version=2.0.0
+skb.module.version=2.1.0
 skb.module.alias=skb
 skb.module.name=SKB
 skb.module.url=https://github.com/vdmeer/skb-java
-skb.module.description=Base of the Java SKB
+skb.module.description=Base of the Java SKB with shell scripts for handling POMs, file versions, and other aspects.
 skb.module.inceptionYear=2010
 skb.module.properties.compiler.source=1.8
 skb.module.properties.compiler.target=1.8

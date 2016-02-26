@@ -1,7 +1,16 @@
-v2.0.0 - release - 2015-##-##
+v2.1.0 - release - 2016-02-26
+-----------------------------
+* moved all scripts to bin folder
+* moved all sourcing files to bin folder
+* added script short cuts (bin)
+* added links to modules and tasks (bin, etc)
+* added external dependency to project settings files and create-pom task
+
+
+v2.0.0 - release - 2015-12-12
 -----------------------------
 * full version of module scripting environment
-* scripts for cloning and setting up the SKB localle
+* scripts for cloning and setting up the SKB locally
 
 
 pre v2.0.0 (2007-1015)

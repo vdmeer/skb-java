@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.vandermeer</groupId>
 	<artifactId>skb-java</artifactId>
-	<version>2.0.0</version>
+	<version>2.1.0</version>
 	<packaging>pom</packaging>
 
 	<name>SKB</name>
 	<url>https://github.com/vdmeer/skb-java</url>
-	<description>Base of the Java SKB</description>
+	<description>Base of the Java SKB with shell scripts for handling POMs, file versions, and other aspects.</description>
 	<inceptionYear>2010</inceptionYear>
 
 	<properties>
@@ -48,7 +48,7 @@
 	<scm>
 		<developerConnection>scm:git:git@github.com:vdmeer/skb-java.git</developerConnection>
 		<connection>scm:git:git://github.com/vdmeer/skb-java.git</connection>
-		<tag>skb-java-2.0.0</tag>
+		<tag>skb-java-2.1.0</tag>
 		<url>https://github.com/vdmeer/skb-java</url>
 	</scm>
 
