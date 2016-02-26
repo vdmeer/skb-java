@@ -27,7 +27,7 @@ logback-core=ch.qos.logback logback-core 1.0.9
 #
 # JUNIT
 #
-juni=junit junit 4.12
+junit=junit junit 4.12
 
 #
 # MOCKITO

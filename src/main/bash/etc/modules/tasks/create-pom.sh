@@ -154,16 +154,15 @@ cat $MOD_ETC_POMART_DIR/project-open.skb >> $out_fn_fqpn
 		if [ -n "$skb_module_externalDependencies_compile" ]; then
 			for extdep in $skb_module_externalDependencies_compile
 			do
-				if [ -z "_ed$extdep" ]; then
+				_dep_name=`echo $extdep | sed -e ':b; s/^\([^=]*\)*-/\1_/; tb;' -e 's/=$//' -e 's/^/_ed/'`
+				if [ -z "$_dep_name" ]; then
 					echo "external compile dependency not set: ${extdep}"
 				else
 					echo -n "."
 					## get the actual content from the sourced variable
 					## indirections work like this: http://www.tldp.org/LDP/abs/html/ivr.html
-					_name="_ed${extdep}"
-					eval _name=\$$_name
-					_arr=$(echo $_name | tr " " "\n")
-
+					eval _dep_name=\$$_dep_name
+					_arr=$(echo $_dep_name | tr " " "\n")
 					echo "		<dependency>" >> $out_fn_fqpn
 					count=1
 					for _elem in $_arr
@@ -187,16 +186,15 @@ cat $MOD_ETC_POMART_DIR/project-open.skb >> $out_fn_fqpn
 		if [ -n "$skb_module_externalDependencies_test" ]; then
 			for extdep in $skb_module_externalDependencies_test
 			do
-				if [ -z "_ed$extdep" ]; then
+				_dep_name=`echo $extdep | sed -e ':b; s/^\([^=]*\)*-/\1_/; tb;' -e 's/=$//' -e 's/^/_ed/'`
+				if [ -z "$_dep_name" ]; then
 					echo "external test dependency not set: ${extdep}"
 				else
 					echo -n "."
 					## get the actual content from the sourced variable
 					## indirections work like this: http://www.tldp.org/LDP/abs/html/ivr.html
-					_name="_ed${extdep}"
-					eval _name=\$$_name
-					_arr=$(echo $_name | tr " " "\n")
-
+					eval _dep_name=\$$_dep_name
+					_arr=$(echo $_dep_name | tr " " "\n")
 					echo "		<dependency>" >> $out_fn_fqpn
 					count=1
 					for _elem in $_arr
@@ -209,10 +207,10 @@ cat $MOD_ETC_POMART_DIR/project-open.skb >> $out_fn_fqpn
 						fi
 						if [ "$count" -eq 3 ]; then
 							echo "			<version>$_elem</version>" >> $out_fn_fqpn
-							echo "			<scope>test</scope>" >> $out_fn_fqpn
 						fi
 						count=$[$count + 1]
 					done
+					echo "			<scope>test</scope>" >> $out_fn_fqpn
 					echo "		</dependency>" >> $out_fn_fqpn
 				fi
 			done
