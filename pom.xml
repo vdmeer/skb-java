@@ -71,13 +71,12 @@
 			<plugin>
 				<groupId>de.vandermeer</groupId>
 				<artifactId>project-manager-maven-plugin</artifactId>
-				<version>0.0.1</version>
+				<version>0.0.2-SNAPSHOT</version>
 				<executions>
 					<execution>
-						<id>test-project-manager</id>
+						<id>run-project-manager</id>
 						<phase>initialize</phase>
 						<configuration>
-							<name>TEST</name>
 							<configDir>${basedir}/src/bundle/pm</configDir>
 							<projectPmDir>/src/bundle/pm</projectPmDir>
 						</configuration>
@@ -207,6 +206,7 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -239,6 +239,7 @@
 					<javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
