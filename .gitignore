@@ -1,9 +1,6 @@
-target/
 .project
 .settings
 _intern/
-_tests/
-bin/env.settings
-bin/.source-tcsh.gen
-.source-tcsh.gen
+target/
+bin-old/
 

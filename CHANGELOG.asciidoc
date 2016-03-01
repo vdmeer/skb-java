@@ -1,3 +1,9 @@
+v2.2.0 - release - 2016-03-01
+-----------------------------
+* removed old (bash script based) project coordination
+* added new (maven plugin based) project coordination
+
+
 v2.1.0 - release - 2016-02-26
 -----------------------------
 * moved all scripts to bin folder

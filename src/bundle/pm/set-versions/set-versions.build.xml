@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="skb" default="set-versions">
+<project name="pm" default="skb-set-versions">
 	<!-- e.g. = modules/dpi.settings -->
 	<!-- ant -f ant-macros/version.build.xml -DmoduleFile=../modules/skb-base.settings -DmoduleDir=/dev/skb/skb-base -->
 	<property file="${moduleFile}"/>
 
-	<property name="module.version" value="${skb.module.version}"/>
-	<property name="target.version" value="${skb.module.properties.compiler.target}"/>
+	<property name="module.version" value="${mvn.version}"/>
+	<property name="target.version" value="${mvn.properties.compiler.target}"/>
 
 	<tstamp>
 		<format property="skb.built.6d" pattern="yyMMdd" />
 		<format property="skb.built.2d3c4d" pattern="dd-MMM-yy" />
 	</tstamp>
 
-	<property file="set-versions.macro.properties"/>
+	<property file="src/bundle/pm/set-versions/set-versions.macro.properties"/>
 	<import file="set-versions.macro.xml"/>
 
-	<target name="set-versions">
+	<target name="skb-set-versions">
+		<echo message="${moduleDir} - ${skb.built.6d} - ${skb.version.long.java} - ${mvn.properties.encoding}" />
 		<push-version
 			module.dir="${moduleDir}"
-			sourceEncoding="${skb.module.properties.encoding}"
+			sourceEncoding="${mvn.properties.encoding}"
 		/>
 	</target>
 </project>
