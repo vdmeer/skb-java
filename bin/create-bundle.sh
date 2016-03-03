@@ -45,6 +45,7 @@ if [ -d "$1/target" ]; then
 	rm -fr $target >& /dev/null
 	mkdir $target >&/dev/null
 	cp $source/target/*.jar $target
+	rm $target/*with-dependencies.jar
 	cp $source/pom.xml $target
 	chmod 644 $target/*
 	for i in `find $target -type f`
