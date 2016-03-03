@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Copyright 2014-2016 Sven van der Meer <vdmeer.sven@mykolab.com>
 ##
