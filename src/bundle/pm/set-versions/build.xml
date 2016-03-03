@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="pm" default="skb-set-versions">
 	<!-- e.g. = modules/dpi.settings -->
-	<!-- ant -f ant-macros/version.build.xml -DmoduleFile=../modules/skb-base.settings -DmoduleDir=/dev/skb/skb-base -->
+	<!-- ant -f build.xml -DmoduleFile=../modules/skb-base.settings -DmoduleDir=/dev/skb/skb-base -DversionFile=macro/versions.properties -->
 	<property file="${moduleFile}"/>
 
 	<property name="module.version" value="${mvn.version}"/>
@@ -12,8 +12,8 @@
 		<format property="skb.built.2d3c4d" pattern="dd-MMM-yy" />
 	</tstamp>
 
-	<property file="src/bundle/pm/set-versions/set-versions.macro.properties"/>
-	<import file="set-versions.macro.xml"/>
+	<property file="${versionFile}"/>
+	<import file="macro.xml"/>
 
 	<target name="skb-set-versions">
 		<echo message="${moduleDir} - ${skb.built.6d} - ${skb.version.long.java} - ${mvn.properties.encoding}" />
