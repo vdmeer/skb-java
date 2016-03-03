@@ -23,7 +23,7 @@
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
 ## @copyright  2014-2015 Sven van der Meer
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
-## @version    v2.1.0 build 160226 (26-Feb-16)
+## @version    v2.3.0 build 160303 (03-Mar-16)
 
 inst_dir=
 if [ -z "$2" ]; then

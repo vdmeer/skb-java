@@ -16,7 +16,7 @@
 ##
 
 ##
-## Sets file versions for a particular project using given version properties.
+## Sets file versions for the master project.
 ## Call
 ##
 ## @package    de.vandermeer.skb
@@ -83,11 +83,4 @@ SetDirectories()
 GetSystem
 SetDirectories
 
-ant="ant -f src/bundle/pm/set-versions/build.xml -DversionFile=$home_sh/src/bundle/pm/set-versions/versions.properties"
-
-projects=`cat src/bundle/pm/projects.pm`
-for dir in $projects
-do
-	prj_dir=`echo $dir | sed -e 's/^.*=//'`
-	$ant -DmoduleDir=$home_sh/$prj_dir -DmoduleFile=$home_sh/$prj_dir/src/bundle/pm/project.properties
-done
+ant -f src/bundle/pm/set-versions/build.xml -DversionFile=$home_sh/src/bundle/pm/set-versions/versions.properties -DmoduleDir=$home_sh/ -DmoduleFile=$home_sh/src/bundle/pm/project.properties -DmacroFile=macro-bin.xml

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="skb-set-versions">
+	<macrodef name="push-version" description="Updates the internal version string of all SKB source files.">
+		<attribute name="module.dir"/>
+		<attribute name="sourceEncoding"/>
+
+		<sequential>
+			<replaceregexp byline="false" encoding="@{sourceEncoding}">
+				<!-- sed "s/^## @version.*$/ \*## @version    ${version}/" -->
+				<regexp pattern="## @version(.*)"/>
+				<substitution expression="## @version    ${skb.version.long.sh}"/>
+				<fileset dir="@{module.dir}" >
+					<include name="bin/**/*.sh" />
+					<exclude name="**/set-master-version.sh" />
+				</fileset>
+			</replaceregexp>
+		</sequential>
+	</macrodef>
+</project>

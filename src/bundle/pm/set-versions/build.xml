@@ -13,7 +13,14 @@
 	</tstamp>
 
 	<property file="${versionFile}"/>
-	<import file="macro.xml"/>
+
+	<condition property="macroFile" value="macro.xml">
+		<not>
+			<isset property="macroFile"/>
+		</not>
+	</condition>
+
+	<import file="${macroFile}"/>
 
 	<target name="skb-set-versions">
 		<echo message="${moduleDir} - ${skb.built.6d} - ${skb.version.long.java} - ${mvn.properties.encoding}" />
