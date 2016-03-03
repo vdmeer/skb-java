@@ -1,3 +1,11 @@
+v2.3.0 - release - 2016-03-##
+-----------------------------
+* added svg2vector to projects
+* fixed a few scipt problems
+* added set-version-master
+* added clone-git
+
+
 v2.2.0 - release - 2016-03-01
 -----------------------------
 * removed old (bash script based) project coordination
