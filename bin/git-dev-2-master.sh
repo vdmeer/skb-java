@@ -65,6 +65,7 @@ echo " on branch $branch"
 (cd $base_dir; git merge --no-ff -s recursive -X theirs dev)
 (cd $base_dir; git branch -d dev)
 
+./bin/set-versions.sh
 mvn initialize
 
 (cd $base_dir; mvn clean install)
