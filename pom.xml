@@ -211,18 +211,24 @@
 
 	<modules>
 		<module>../mvn/project-manager</module>
-		<module>../asciiparagraph</module>
-		<module>../asciilist</module>
-		<module>../asciitable</module>
-		<module>../execs</module>
-		<module>../base</module>
+
+		<module>../ascii/char-encoding</module>
+		<module>../ascii/paragraph</module>
+		<module>../ascii/list</module>
+		<module>../ascii/table</module>
+		<module>../ascii/heading</module>
+
+		<module>../misc/execs</module>
+
+		<module>../skb/base</module>
 <!--
-		<module>../categories</module>
-		<module>../configuration</module>
+		<module>../skb/categories</module>
+		<module>../skb/configuration</module>
 -->
-		<module>../datatool</module>
-		<module>../examples</module>
-		<module>../svg2vector</module>
+		<module>../skb/datatool</module>
+		<module>../skb/examples</module>
+
+		<module>../misc/svg2vector</module>
 	</modules>
 
 	<profiles>
