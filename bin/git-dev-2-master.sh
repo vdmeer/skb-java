@@ -68,7 +68,7 @@ echo " on branch $branch"
 ./bin/set-versions.sh
 mvn initialize
 
-(cd $base_dir; mvn clean install)
+./bin/build.sh -p $base_dir -g install -b -s -j -t -c
 
 (cd $base_dir; git commit -m "set file versions and passed tests for version v${version}" .)
 (cd $base_dir; git push origin master)

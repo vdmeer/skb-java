@@ -6,3 +6,4 @@ skb-base=../base
 skb-datatool=../datatool
 skb-examples=../examples
 svg2vector=../svg2vector
+mvn-prj-manager=../mvn/project-manager

@@ -32,6 +32,19 @@ MOD_SCRIPT_NAME=`basename $0`
 ## true for build with tests, false for w/o
 do_tests=false
 
+## true for running goal clena first, false for w/o
+do_clean=false
+
+## true for generate bundle docs, false for w/o
+do_bd=false
+
+## true for generate a sources jar, false for w/o
+do_src_jar=false
+
+## true for generate a javadoc jar, false for w/o
+do_jd_jar=false
+
+
 ## encoding for the Java compiler
 file_encoding=UTF-8
 
@@ -74,10 +87,14 @@ Help()
 	echo "       Usage:  $MOD_SCRIPT_NAME [-options]"
 	echo ""
 	echo "       Options"
-	echo "         -h    - this help screen"
-	echo "         -t    - build with tests (if not present, build without tests)"
+	echo "         -b    - generate bundle documentation (and copy to target)"
+	echo "         -c    - run 'mvn clean' before the actual goal"
 	echo "         -g    - Maven goal to build for"
+	echo "         -h    - this help screen"
+	echo "         -j    - generate javadoc jar "
 	echo "         -p    - project to build as a folder relative from the current directory"
+	echo "         -s    - generate a sources jar"
+	echo "         -t    - build with tests (if not present, build without tests)"
 	echo ""
 	exit 255;
 }
@@ -124,6 +141,29 @@ do
 			shift
 		;;
 
+		#-b generate bundle documentation
+		-b)
+			do_bd=true
+			shift
+		;;
+
+		#-s generate sources jar
+		-s)
+			do_src_jar=true
+			shift
+		;;
+
+		#-j generate sources jar
+		-j)
+			do_jd_jar=true
+			shift
+		;;
+
+		#-c run mvn clean
+		-c)
+			do_clean=true
+			shift
+		;;
 
 		#-h prints help and exists
 		-h)		Help;exit 255;;
@@ -145,17 +185,55 @@ if [ -z $goal ]; then
 else
 	echo "$MOD_SCRIPT_NAME: building for goal $goal"
 fi
+if [ $do_clean == true ]; then
+	echo "$MOD_SCRIPT_NAME: running 'clean' before $goal"
+	goal="clean $goal"
+fi
 
 if [ $do_tests == true ]; then
-	echo "building with tests"
+	echo "$MOD_SCRIPT_NAME: building with tests"
 	test_arg=
 else
 	echo "$MOD_SCRIPT_NAME: building without tests"
 	test_arg="-DskipTests"
 fi
 
+profiles_arg=""
+if [ $do_bd == true ]; then
+	echo "$MOD_SCRIPT_NAME: generating bundle docs"
+	if [ "$profiles_arg" != "" ]; then
+		profiles_arg="${profiles_arg},"
+	fi
+	profiles_arg="${profiles_arg}env-bundledoc"
+else
+	echo "$MOD_SCRIPT_NAME: no bundle docs"
+fi
+
+if [ $do_src_jar == true ]; then
+	echo "$MOD_SCRIPT_NAME: generating sources jar"
+	if [ "$profiles_arg" != "" ]; then
+		profiles_arg="${profiles_arg},"
+	fi
+	profiles_arg="${profiles_arg}env-srcjar"
+else
+	echo "$MOD_SCRIPT_NAME: no sources jar"
+fi
+
+if [ $do_jd_jar == true ]; then
+	echo "$MOD_SCRIPT_NAME: generating javadoc jar"
+	if [ "$profiles_arg" != "" ]; then
+		profiles_arg="${profiles_arg},"
+	fi
+	profiles_arg="${profiles_arg}env-jdjar"
+else
+	echo "$MOD_SCRIPT_NAME: no javadoc jar"
+fi
+
 
 maven_arg="$goal -DargLine=\"-Dfile.encoding=${file_encoding} -Dlogback.configurationFile=${logback_configuration_file}\" $test_arg"
+if [ "$profiles_arg" != "" ]; then
+	maven_arg="$maven_arg -P $profiles_arg"
+fi
 
 if [ -z $project ]; then
 	$mvn $maven_arg

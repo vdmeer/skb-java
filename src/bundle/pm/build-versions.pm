@@ -12,6 +12,13 @@ commons-io=commons-io commons-io 2.4
 commons-lang3=org.apache.commons commons-lang3 3.4
 
 ##
+## MAVEN Plugins
+##
+maven-plugin-api=org.apache.maven maven-plugin-api 3.0.5
+maven-plugin-annotations=org.apache.maven.plugin-tools maven-plugin-annotations 3.4
+maven-project=org.apache.maven maven-project 2.2.1
+
+##
 ## JACKSON JSON Parser
 ##
 jackson-core-asl=org.codehaus.jackson jackson-core-asl 1.8.5
