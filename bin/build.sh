@@ -23,7 +23,7 @@
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
 ## @copyright  2014-2015 Sven van der Meer
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
-## @version    v2.3.0 build 160303 (03-Mar-16)
+## @version    v2.3.0 build 160306 (06-Mar-16)
 
 
 ## script name for output
@@ -49,7 +49,7 @@ do_jd_jar=false
 file_encoding=UTF-8
 
 ## logback configuration file for the compiler
-logback_configuration_file=../base/src/main/resources/logback.xml
+logback_configuration_file=../skb/base/src/main/resources/logback.xml
 
 
 ##

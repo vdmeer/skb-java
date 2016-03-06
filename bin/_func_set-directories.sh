@@ -16,8 +16,8 @@
 ##
 
 ##
-## Task that creates a bundle with signed artifacts for a project.
-## Call with project base directory
+## Sets directories: absolute (OS specific) and sh (non OS specific absolute).
+## Source file, call function, will set variables "_home_abs" and "_home_sh"
 ##
 ## @package    de.vandermeer.skb
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
@@ -25,34 +25,25 @@
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
 ## @version    v2.3.0 build 160306 (06-Mar-16)
 
-if [ ! -d target ]; then
-	mkdir target
-fi
-if [ ! -d target/bundles ]; then
-	mkdir target/bundles
-fi
 
-if [ -d "$1/target" ]; then
-	source=$1
-	echo "processing <$source>"
-	_p=(`echo $source | sed -e 's/\// /g'`)
-	target=target/bundles/${_p[-1]}
-	bundle_name=${_p[-1]}
-	rm -fr $target >& /dev/null
-	mkdir $target >&/dev/null
-	cp $source/target/*.jar $target
-	rm $target/*with-dependencies.jar
-	cp $source/pom.xml $target
-	chmod 644 $target/*
-	for i in `find $target -type f`
-	do
-		gpg -ab $i
-	done
-	chmod 644 $target/*
-	rm target/bundles/$bundle_name.zip >& /dev/null
-	(cd $target; zip $bundle_name *;mv $bundle_name.zip ..)
-else
-	echo "no target folder found in <$1>"
-fi
+##
+## Sets directories for specific systems (call GetSystem first)
+##
+SetDirectories()
+{
+	_home_abs=`pwd`
 
-echo "finished"
+	CP=${LIB_HOME}/*
+	SCRIPT_NAME=`basename $0`
+
+	echo "set directories: $_system"
+	if [ "$_system" == "CYGWIN" ] ; then
+		if [[ $_home_abs == *"/cygdrive"* ]]; then
+			_home_sh="/"`echo $_home_abs | cut -d/ -f4-`
+		else
+			_home_sh=${_home_abs}
+		fi
+	else
+		_home_sh=${_home_abs}
+	fi
+}

@@ -23,7 +23,7 @@
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
 ## @copyright  2014-2015 Sven van der Meer
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
-## @version    v2.3.0 build 160303 (03-Mar-16)
+## @version    v2.3.0 build 160306 (06-Mar-16)
 
 
 if [ ! -f "$1/pom.xml" ]; then
@@ -85,4 +85,3 @@ mvn initialize
 
 (cd $base_dir; git commit -m "started next version in change log" .)
 (cd $base_dir; git push origin dev)
-

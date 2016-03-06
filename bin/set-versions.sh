@@ -23,71 +23,28 @@
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
 ## @copyright  2014-2015 Sven van der Meer
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
-## @version    v2.3.0 build 160303 (03-Mar-16)
+## @version    v2.3.0 build 160306 (06-Mar-16)
 
 
-##
-## Get system, need this information for creating build scripts
-## taken from: https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux#3466183 - see there for details
-##
-GetSystem()
-{
-	case "$(uname -s)" in
-		Darwin)
-			echo 'found Mac OS X'
-			system=MAC
-			;;
-		Linux)
-			echo 'Linux'
-			system=LINUX
-			;;
-		CYGWIN*)
-			echo 'found Cygwin'
-			system=CYGWIN
-			;;
-		MINGW32*|MSYS*)
-			echo 'found MS Windows'
-			system=WINDOWS
-			;;
-		*)
-			echo 'found other OS'
-			system="???" 
-			;;
-	esac
-}
+## script directory, from https://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+export MOD_SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+## script name for error/info messages
+export MOD_SCRIPT_NAME=`basename $0`
 
 
-##
-## Sets directories for specific systems (call GetSystem first)
-##
-SetDirectories()
-{
-	home_abs=`pwd`
-
-	CP=${LIB_HOME}/*
-	SCRIPT_NAME=`basename $0`
-
-	echo "set directories: $system"
-	if [ "$system" == "CYGWIN" ] ; then
-		if [[ $home_abs == *"/cygdrive"* ]]; then
-			home_sh="/"`echo $home_abs | cut -d/ -f4-`
-		else
-			home_sh=${home_abs}
-		fi
-	else
-		home_sh=${home_abs}
-	fi
-}
-
-
+source $MOD_SCRIPT_DIR/_func_get-system.sh
 GetSystem
+
+
+source $MOD_SCRIPT_DIR/_func_set-directories.sh
 SetDirectories
 
-ant="ant -f src/bundle/pm/set-versions/build.xml -DversionFile=$home_sh/src/bundle/pm/set-versions/versions.properties"
+
+ant="ant -f src/bundle/pm/set-versions/build.xml -DversionFile=$_home_sh/src/bundle/pm/set-versions/versions.properties"
 
 projects=`cat src/bundle/pm/projects.pm`
 for dir in $projects
 do
 	prj_dir=`echo $dir | sed -e 's/^.*=//'`
-	$ant -DmoduleDir=$home_sh/$prj_dir -DmoduleFile=$home_sh/$prj_dir/src/bundle/pm/project.properties
+	$ant -DmoduleDir=$_home_sh/$prj_dir -DmoduleFile=$_home_sh/$prj_dir/src/bundle/pm/project.properties
 done
