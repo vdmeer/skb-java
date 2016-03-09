@@ -1,4 +1,4 @@
-char-encoding=../ascii/char-encoding
+char-translation=../ascii/char-translation
 asciiheading=../ascii/heading
 asciitable=../ascii/table
 asciilist=../ascii/list

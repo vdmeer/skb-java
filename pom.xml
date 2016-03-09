@@ -71,7 +71,7 @@
 			<plugin>
 				<groupId>de.vandermeer</groupId>
 				<artifactId>project-manager-maven-plugin</artifactId>
-				<version>0.0.2</version>
+				<version>0.0.3-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<id>run-project-manager</id>
@@ -212,7 +212,7 @@
 	<modules>
 		<module>../mvn/project-manager</module>
 
-		<module>../ascii/char-encoding</module>
+		<module>../ascii/char-translation</module>
 		<module>../ascii/paragraph</module>
 		<module>../ascii/list</module>
 		<module>../ascii/table</module>
