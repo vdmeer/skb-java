@@ -204,7 +204,7 @@ if [ $do_bd == true ]; then
 	if [ "$profiles_arg" != "" ]; then
 		profiles_arg="${profiles_arg},"
 	fi
-	profiles_arg="${profiles_arg}env-bundledoc"
+	profiles_arg="${profiles_arg}env-bdoc"
 else
 	echo "$MOD_SCRIPT_NAME: no bundle docs"
 fi

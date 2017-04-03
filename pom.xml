@@ -211,8 +211,14 @@
 
 	<modules>
 		<module>../mvn/project-manager</module>
+		<module>../skb/interfaces</module>
+
+		<module>../j7/table</module>
+		<module>../j7/list</module>
+		<module>../j7/paragraph</module>
 
 		<module>../ascii/char-translation</module>
+		<module>../ascii/art</module>
 		<module>../ascii/paragraph</module>
 		<module>../ascii/list</module>
 		<module>../ascii/table</module>
@@ -226,7 +232,9 @@
 		<module>../skb/configuration</module>
 -->
 		<module>../skb/datatool</module>
+<!--
 		<module>../skb/examples</module>
+-->
 
 		<module>../misc/svg2vector</module>
 	</modules>
