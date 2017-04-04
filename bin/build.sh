@@ -44,6 +44,9 @@ do_src_jar=false
 ## true for generate a javadoc jar, false for w/o
 do_jd_jar=false
 
+## true for maven in quiet mode
+mvn_quiet=false
+
 
 ## encoding for the Java compiler
 file_encoding=UTF-8
@@ -93,6 +96,7 @@ Help()
 	echo "         -h          - this help screen"
 	echo "         -j          - generate javadoc jar "
 	echo "         -p FOLDER   - project to build as a folder relative from the current directory"
+	echo "         -q          - run maven in quiet mode"
 	echo "         -s          - generate a sources jar"
 	echo "         -t          - build with tests (if not present, build without tests)"
 	echo ""
@@ -156,6 +160,12 @@ do
 		#-j generate sources jar
 		-j)
 			do_jd_jar=true
+			shift
+		;;
+
+		#-q maven i nquiet mode
+		-q)
+			mvn_quiet=true
 			shift
 		;;
 
@@ -235,10 +245,25 @@ if [ "$profiles_arg" != "" ]; then
 	maven_arg="$maven_arg -P $profiles_arg"
 fi
 
+if [ $mvn_quiet == true ]; then
+	echo "$MOD_SCRIPT_NAME: running maven in quiet mode"
+	maven_arg="$maven_arg -q"
+fi
+
 if [ -z $project ]; then
 	$mvn $maven_arg
+	if [ $? -ne 0 ]; then
+		echo ""
+		echo "    -> problem running '$mvn $maven_arg'"
+		exit 255
+	fi
 else
 	$mvn -pl $project $maven_arg
+	if [ $? -ne 0 ]; then
+		echo ""
+		echo "    -> problem running '$mvn -pl $project $maven_arg'"
+		exit 255
+	fi
 fi
 
 exit 0

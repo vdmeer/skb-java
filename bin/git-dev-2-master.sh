@@ -62,12 +62,15 @@ show_only=false
 RunCmd()
 {
 	if [ $show_only == true ]; then
-		EchoCmd "CMD ==> $*"
+		EchoCmd "$*"
 	else
 		$*
 	fi
 }
 
+##
+## Function to simply show a command with a prefix
+##
 EchoCmd(){
 	echo "CMD ==> $*"
 }
@@ -82,15 +85,19 @@ do
 		#-p project folder
 		-p)
 			shift
+			project=$1
 			if [ ! -d "$1" ]; then
-				echo "$MOD_SCRIPT_NAME: given project folder <$1> does not exist?"
+				echo "$MOD_SCRIPT_NAME: given project folder <$project> does not exist?"
 				exit 255
 			fi
 			if [ ! -f "$1/pom.xml" ]; then
-				echo "$MOD_SCRIPT_NAME: no POM file found in project folder <$1>"
+				echo "$MOD_SCRIPT_NAME: no POM file found in project folder <$project>"
 				exit 255
 			fi
-			project=$1
+			if [ ! -f "$project/src/bundle/pm/project.properties" ]; then
+				echo "$MOD_SCRIPT_NAME: no project.properties file found in project $project"
+				exit 255
+			fi
 			shift
 		;;
 
@@ -108,208 +115,418 @@ do
 done
 
 
-#check if we are on a dev branch and set master branch
-_branch_dev=`(cd $project;git branch | grep \* | cut -d ' ' -f2)`
-if [ "dev" != "$_branch_dev" ]; then
-	if [ "dev-j7" != "$_branch_dev" ]; then
-		echo ""
-		echo "$project on branch $_branch_dev, need it to be on dev or dev-j7"
-		exit 255
-	fi
+
+# name of a file with an entry point (for picking up where last things went wrong)
+entry_point_fn=_entry-point
+
+# an entry point to jump to
+entry_point=0
+
+if [ -f "$project/$entry_point_fn" ]; then
+	typeset -i entry_point=$(cat $project/$entry_point_fn)
+else
+	echo $entry_point > $project/$entry_point_fn
 fi
 
-_branch_master="master"
-if [ "dev-j7" == "$_branch_dev" ]; then
-	_branch_master="master-j7"
-fi
+echo "$MOD_SCRIPT_NAME: using entry point $entry_point"
 
-if [ "`(cd $project;git branch --list $_branch_master)`" == "" ]; then
-	echo ""
-	echo "did not find expected master branch $_branch_master"
-	exit 255
-fi
 
-if [ ! -f "$project/src/bundle/pm/project.properties" ]; then
-	echo ""
-	echo "no project.properties file found, need that to determine version"
-	exit 255
-fi
+## detect current branch
+_branch_current=`(cd $project;git branch | grep \* | cut -d ' ' -f2)`
+case "$_branch_current" in
+	dev*)
+		if [ $entry_point -ge 99 ]; then
+			echo "$MOD_SCRIPT_NAME: entry point > 99, should be on 'master' branch"
+			exit -255
+		fi
+		;;
+	master*)
+		if [ $entry_point -lt 99 ]; then
+			echo "$MOD_SCRIPT_NAME: entry point < 99, should be on 'dev' branch"
+			exit -255
+		fi
+		;;
+esac
 
-RunCmd vi $project/src/bundle/pm/project.properties
+
+## set dev and master branches
+case "$_branch_current" in
+	*-j7)
+		_branch_dev=`(cd $project;git for-each-ref --format='%(refname:short)' refs/heads/ | grep dev-j7)`
+		if [ "$_branch_dev" != "dev-j7" ]; then
+			echo "$MOD_SCRIPT_NAME: did not find a 'dev' branch, tried 'dev-j7'"
+			exit 200
+		fi
+		_branch_master=`(cd $project;git for-each-ref --format='%(refname:short)' refs/heads/ | grep master-j7)`
+		if [ "$_branch_master" != "master-j7" ]; then
+			echo "$MOD_SCRIPT_NAME: did not find a 'master' branch, tried 'master-j7'"
+			exit 210
+		fi
+		;;
+	dev)
+		echo "dev"
+		_branch_dev=`(cd $project;git for-each-ref --format='%(refname:short)' refs/heads/ | grep dev)`
+		if [ "$_branch_dev" != "dev" ]; then
+			echo "$MOD_SCRIPT_NAME: did not find a 'dev' branch, tried 'dev'"
+			exit 220
+		fi
+		_branch_master=`(cd $project;git for-each-ref --format='%(refname:short)' refs/heads/ | grep master)`
+		if [ "$_branch_master" != "master" ]; then
+			echo "$MOD_SCRIPT_NAME: did not find a 'master' branch, tried 'master'"
+			exit 230
+		fi
+		;;
+	master)
+		echo "master"
+		_branch_dev=`(cd $project;git for-each-ref --format='%(refname:short)' refs/heads/ | grep dev)`
+		if [ $entry_point -lt 101 ]; then
+			if [ "$_branch_dev" != "dev" ]; then
+				echo "$MOD_SCRIPT_NAME: did not find a 'dev' branch, tried 'dev'"
+				echo $_branch_dev
+				exit 240
+			fi
+		else
+			_branch_dev="<deleted in 101>"
+		fi
+		_branch_master=`(cd $project;git for-each-ref --format='%(refname:short)' refs/heads/ | grep master)`
+		if [ "$_branch_master" != "master" ]; then
+			echo "$MOD_SCRIPT_NAME: did not find a 'master' branch, tried 'master'"
+			exit 250
+		fi
+		;;
+
+esac
+
+
+## ep=1
+if [ $entry_point -lt 1 ]; then
+	RunCmd vi $project/src/bundle/pm/project.properties
+	echo 1 > $project/$entry_point_fn
+fi
 _version=`cat $project/src/bundle/pm/project.properties| grep "mvn.version=" | sed 's/.*=//' | tr [:cntrl:] '++' | sed 's/+//g'`
 
 
 echo "processing"
-echo " - project:       $project"
-echo " - dev branch:    $_branch_dev"
-echo " - master branch: $_branch_master"
-echo " - version:       ($_version)"
+echo " - project:        $project"
+echo " - current branch: $_branch_current"
+echo " - dev branch:     $_branch_dev"
+echo " - master branch:  $_branch_master"
+echo " - version:        $_version"
 echo ""
 echo ""
 
 
-_edit_files="$project/src/bundle/doc/CHANGELOG.adoc $project/src/bundle/doc/CHANGELOG.asciidoc $project/src/bundle/doc/README.asciidoc"
-for file in $_edit_files
-do
-	if [ -f "$file" ]; then
-		echo "- edit $file"
-		RunCmd vi $file
+## ep=2
+if [ $entry_point -lt 2 ]; then
+	_edit_files="$project/src/bundle/doc/CHANGELOG.adoc $project/src/bundle/doc/CHANGELOG.asciidoc $project/src/bundle/doc/README.asciidoc"
+	for file in $_edit_files
+	do
+		if [ -f "$file" ]; then
+			echo "- edit $file"
+			RunCmd vi $file
+		fi
+	done
+	echo 2 > $project/$entry_point_fn
+fi
+
+
+## ep=3
+if [ $entry_point -lt 3 ]; then
+	if [ -f "$project/create-readme.sh" ]; then
+		echo "- running create-readme.sh"
+		if [ $show_only == true ]; then
+			EchoCmd "(cd $project;./create-readme.sh)"
+		else
+			(cd $project;./create-readme.sh)
+			if [ $? -ne 0 ]; then
+				echo ""
+				echo "    -> problem running 'create-readme.sh'"
+				exit 255
+			fi
+		fi
 	fi
-done
+	echo 3 > $project/$entry_point_fn
+fi
 
 
-## build README if script exists
-if [ -f "$project/create-readme.sh" ]; then
-	echo "- running create-readme.sh"
-	if [ $show_only == true ]; then
-		EchoCmd "(cd $project;./create-readme.sh)"
-	else
-		(cd $project;./create-readme.sh)
+## ep=4
+if [ $entry_point -lt 4 ]; then
+	if [ -f "$project/mvn-generate-sources.sh" ]; then
+		echo "- running mvn-generate-sources.sh"
+		if [ $show_only == true ]; then
+			EchoCmd "(cd $project;./mvn-generate-sources.sh)"
+		else
+			(cd $project;./mvn-generate-sources.sh)
+			if [ $? -ne 0 ]; then
+				echo ""
+				echo "    -> problem running 'mvn-generate-sources.sh'"
+				exit 255
+			fi
+		fi
+	fi
+	echo 4 > $project/$entry_point_fn
+fi
+
+
+## ep=5
+if [ $entry_point -lt 5 ]; then
+	echo "- running 'mvn initialize' to generate new POM if needed"
+	RunCmd mvn initialize -q
+	if [ $show_only == false ]; then
 		if [ $? -ne 0 ]; then
 			echo ""
-			echo "    -> problem running 'create-readme.sh'"
+			echo "    -> problem running 'mvn initialize'"
 			exit 255
 		fi
 	fi
+	echo 5 > $project/$entry_point_fn
 fi
 
 
-## generate sources if script exists
-if [ -f "$project/mvn-generate-sources.sh" ]; then
-	echo "- running mvn-generate-sources.sh"
+## ep=6
+if [ $entry_point -lt 6 ]; then
+	echo "- running 'mvn clean'"
 	if [ $show_only == true ]; then
-		EchoCmd "(cd $project;./mvn-generate-sources.sh)"
+		EchoCmd "(cd $project;mvn clean -q)"
 	else
-		(cd $project;./mvn-generate-sources.sh)
+		(cd $project;mvn clean -q)
 		if [ $? -ne 0 ]; then
 			echo ""
-			echo "    -> problem running 'mvn-generate-sources.sh'"
+			echo "    -> problem running 'mvn clean'"
 			exit 255
 		fi
 	fi
+	echo 6 > $project/$entry_point_fn
 fi
 
 
-echo "- running 'mvn initialize' to generate new POM if needed"
-RunCmd mvn initialize -q
-if [ $show_only == false ]; then
-	if [ $? -ne 0 ]; then
-		echo ""
-		echo "    -> problem running 'mvn initialize'"
-		exit 255
-	fi
-fi
-
-
-echo "- running 'mvn clean'"
-if [ $show_only == true ]; then
-	EchoCmd "(cd $project;mvn clean -q)"
-else
-	(cd $project;mvn clean -q)
-	if [ $? -ne 0 ]; then
-		echo ""
-		echo "    -> problem running 'mvn clean'"
-		exit 255
-	fi
-fi
-
-
-echo "- running 'mvn package'"
-if [ $show_only == true ]; then
-	EchoCmd "(cd $project;mvn package -q)"
-else
-	(cd $project;mvn package -q)
-	if [ $? -ne 0 ]; then
-		echo ""
-		echo "    -> problem running 'mvn package'"
-		exit 255
-	fi
-fi
-
-
-echo "- final add/commit/push on branch $_branch_dev"
-if [ $show_only == true ]; then
-	EchoCmd "(cd $project; git add .)"
-	EchoCmd "(cd $project; git commit -m \"preparing to publish v${_version}\" .)"
-	EchoCmd "(cd $project; git push origin $_branch_dev)"
-else
-	(cd $project; git add .)
-	(cd $project; git commit -m "preparing to publish v${_version}" .)
-	(cd $project; git push origin $_branch_dev)
-fi
-
-
-echo "- switching over to branch $_branch_master and merging with branch $_branch_dev"
-if [ $show_only == true ]; then
-	EchoCmd "(cd $project; git checkout $_branch_master)"
-	EchoCmd "(cd $project; git commit -m \"preparing to publish v${_version}\" .)"
-	EchoCmd "(cd $project; git push origin $_branch_master)"
-	EchoCmd "(cd $project; git merge --no-ff -s recursive -X theirs $_branch_dev)"
-	EchoCmd "(cd $project; git branch -d $_branch_dev)"
-else
-	(cd $project; git checkout $_branch_master)
-	(cd $project; git commit -m "preparing to publish v${_version}" .)
-	(cd $project; git push origin $_branch_master)
-	(cd $project; git merge --no-ff -s recursive -X theirs $_branch_dev)
-	(cd $project; git branch -d $_branch_dev)
-fi
-
-echo "- setting @version information in source files"
-RunCmd ./bin/set-srcfile-versions.sh -p $project
-
-echo "- running a full build"
-RunCmd ./bin/build.sh -p $project -g install -b -s -j -t -c
-
-
-if [ -d "$project/src/site" ]; then
-	echo "- running 'mvn site'"
+## ep=7
+if [ $entry_point -lt 7 ]; then
+	echo "- running a full build"
+	RunCmd ./bin/build.sh -p $project -g install -b -s -j -t -c -q
 	if [ $show_only == true ]; then
-		EchoCmd "(cd $project;mvn site)"
-	else
-		(cd $project;mvn site)
 		if [ $? -ne 0 ]; then
 			echo ""
-			echo "    -> problem running 'mvn site'"
+			echo "    -> problem running a full build"
 			exit 255
 		fi
 	fi
+	echo 7 > $project/$entry_point_fn
 fi
 
 
-echo "- commiting the source files"
-if [ $show_only == true ]; then
-	EchoCmd "(cd $project; git commit -m \"set file versions and passed tests for version v${_version}\" .)"
-	EchoCmd "(cd $project; git push origin $_branch_master)"
-else
-	(cd $project; git commit -m "set file versions and passed tests for version v${_version}" .)
-	(cd $project; git push origin $_branch_master)
+## ep=8
+if [ $entry_point -lt 8 ]; then
+	echo "- final add/commit/push on branch $_branch_dev"
+	if [ $show_only == true ]; then
+		EchoCmd "(cd $project; git add .)"
+		EchoCmd "(cd $project; git commit -m \"preparing to publish v${_version}\" .)"
+		EchoCmd "(cd $project; git push origin $_branch_dev)"
+	else
+		(cd $project; git add .)
+		(cd $project; git commit -m "preparing to publish v${_version}" .)
+		(cd $project; git push origin $_branch_dev)
+	fi
+	echo 8 > $project/$entry_point_fn
 fi
 
 
-echo "- tagging new version"
-if [ $show_only == true ]; then
-	EchoCmd "(cd $project; git tag -a v${_version} -m \"new published version v${_version}\")"
-	EchoCmd "(cd $project; git describe --tags)"
-	EchoCmd "(cd $project; git push --tags)"
-else
-	(cd $project; git tag -a v${_version} -m "new published version v${_version}")
-	(cd $project; git describe --tags)
-	(cd $project; git push --tags)
+## ep=99
+if [ $entry_point -lt 99 ]; then
+	echo "- switching over to branch '$_branch_master'"
+	if [ $show_only == true ]; then
+		EchoCmd "(cd $project; git checkout $_branch_master)"
+	else
+		(cd $project; git checkout $_branch_master)
+		if [ $? -ne 0 ]; then
+			echo ""
+			echo "    -> problem switching over to branch '$_branch_master'"
+			exit 255
+		fi
+	fi
+	echo 99 > $project/$entry_point_fn
 fi
 
 
-echo "- creating maven central bundle with signed artifacts"
-RunCmd ./bin/create-bundle.sh $project
+## ep=100
+if [ $entry_point -lt 100 ]; then
+	echo "- merging '$_branch_master' with '$_branch_dev'"
+	if [ $show_only == true ]; then
+		EchoCmd "(cd $project; git merge --no-ff -s recursive -X theirs $_branch_dev)"
+	else
+		(cd $project; git merge --no-ff -s recursive -X theirs $_branch_dev)
+		if [ $? -ne 0 ]; then
+			echo ""
+			echo "    -> problem merging '$_branch_master' with '$_branch_dev'"
+			exit 255
+		fi
+	fi
+	echo 100 > $project/$entry_point_fn
+fi
+
+
+## ep=101
+if [ $entry_point -lt 101 ]; then
+	echo "- removing '$_branch_dev'"
+	if [ $show_only == true ]; then
+		EchoCmd "(cd $project; git branch -d $_branch_dev)"
+	else
+		(cd $project; git branch -d $_branch_dev)
+		if [ $? -ne 0 ]; then
+			echo ""
+			echo "    -> problem removing '$_branch_dev'"
+			exit 255
+		fi
+	fi
+	echo 101 > $project/$entry_point_fn
+fi
+
+
+
+## ep=102
+if [ $entry_point -lt 102 ]; then
+	echo "- setting @version information in source files"
+	RunCmd ./bin/set-srcfile-versions.sh -p $project
+	if [ $show_only != true ]; then
+		if [ $? -ne 0 ]; then
+			echo ""
+			echo "    -> problem setting @version information in source files"
+			exit 255
+		fi
+	fi
+	echo 102 > $project/$entry_point_fn
+fi
+
+
+## ep=103
+if [ $entry_point -lt 103 ]; then
+	echo "- running a full build"
+	RunCmd ./bin/build.sh -p $project -g install -b -s -j -t -c -q
+	if [ $show_only == true ]; then
+		if [ $? -ne 0 ]; then
+			echo ""
+			echo "    -> problem running a full build"
+			exit 255
+		fi
+	fi
+	echo 103 > $project/$entry_point_fn
+fi
+
+
+## ep=104
+if [ $entry_point -lt 104 ]; then
+	if [ -d "$project/src/site" ]; then
+		echo "- running 'mvn site'"
+		if [ $show_only == true ]; then
+			EchoCmd "(cd $project;mvn site)"
+		else
+			(cd $project;mvn site)
+			if [ $? -ne 0 ]; then
+				echo ""
+				echo "    -> problem running 'mvn site'"
+				exit 255
+			fi
+		fi
+	fi
+	echo 104 > $project/$entry_point_fn
+fi
+
+
+## ep=105
+if [ $entry_point -lt 105 ]; then
+	echo "- commiting the source files"
+	if [ $show_only == true ]; then
+		EchoCmd "(cd $project; git commit -m \"set file versions and passed tests for version v${_version}\" .)"
+	else
+		(cd $project; git commit -m "set file versions and passed tests for version v${_version}" .)
+	fi
+	echo 105 > $project/$entry_point_fn
+fi
+
+
+## ep=106
+if [ $entry_point -lt 106 ]; then
+	echo "- pushing origin to '$_branch_master'"
+	if [ $show_only == true ]; then
+		EchoCmd "(cd $project; git push origin $_branch_master)"
+	else
+		(cd $project; git push origin $_branch_master)
+		if [ $? -ne 0 ]; then
+			echo ""
+			echo "    -> problem pushing origin to '$_branch_master'"
+			exit 255
+		fi
+	fi
+	echo 106 > $project/$entry_point_fn
+fi
+
+
+## ep=107
+if [ $entry_point -lt 107 ]; then
+	echo "- tagging new version"
+	if [ $show_only == true ]; then
+		EchoCmd "(cd $project; git tag -a v${_version} -m \"new published version v${_version}\")"
+	else
+		(cd $project; git tag -a v${_version} -m "new published version v${_version}")
+		if [ $? -ne 0 ]; then
+			echo ""
+			echo "    -> problem tagging new version"
+			exit 255
+		fi
+	fi
+	echo 107 > $project/$entry_point_fn
+fi
+
+
+## ep=108
+if [ $entry_point -lt 108 ]; then
+	echo "- describe tag"
+	if [ $show_only == true ]; then
+		EchoCmd "(cd $project; git describe --tags)"
+	else
+		_tag=`(cd $project; git describe --tags)`
+		if [ "$tag" != "v${_version}" ]
+		echo ""
+			echo "    -> problem describe tag"
+			exit 255
+		fi
+	fi
+	echo 108 > $project/$entry_point_fn
+fi
+
+
+## ep=109
+if [ $entry_point -lt 109 ]; then
+	echo "- pushgin new tag"
+	if [ $show_only == true ]; then
+		EchoCmd "(cd $project; git push --tags)"
+	else
+		(cd $project; git push --tags)
+		if [ $? -ne 0 ]; then
+			echo ""
+			echo "    -> problem pushgin new tag"
+			exit 255
+		fi
+	fi
+	echo 109 > $project/$entry_point_fn
+fi
+
+
+## ep=110
+if [ $entry_point -lt 110 ]; then
+	echo "- creating maven central bundle with signed artifacts"
+	RunCmd ./bin/create-bundle.sh $project
+	if [ $? -ne 0 ]; then
+		echo ""
+		echo "    -> problem creating maven central bundle with signed artifacts"
+		exit 255
+	fi
+	echo 110 > $project/$entry_point_fn
+fi
 
 
 echo "==> finished"
-
-
-
-
-
-
-
+rm $project/$entry_point_fn
 
 
 
