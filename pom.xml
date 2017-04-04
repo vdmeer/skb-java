@@ -71,7 +71,7 @@
 			<plugin>
 				<groupId>de.vandermeer</groupId>
 				<artifactId>project-manager-maven-plugin</artifactId>
-				<version>0.0.2-SNAPSHOT</version>
+				<version>0.0.3-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<id>run-project-manager</id>
@@ -84,64 +84,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-<!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<configuration>
-							<target>
-								<ant antfile="src/bundle/pm/set-versions/build.xml" target="skb-set-versions">
-									<property name="moduleFile" value="../mvn/project-manager/src/bundle/pm/project.properties"/>
-									<property name="moduleDir" value="../mvn/project-manager"/>
-									<property name="versionFile" value="src/bundle/pm/set-versions/versions.properties"/>
-								</ant>
-								<ant antfile="src/bundle/pm/set-versions/build.xml" target="skb-set-versions">
-									<property name="moduleFile" value="../asciiparagraph/src/bundle/pm/project.properties"/>
-									<property name="moduleDir" value="../asciiparagraph"/>
-									<property name="versionFile" value="src/bundle/pm/set-versions/versions.properties"/>
-								</ant>
-								<ant antfile="src/bundle/pm/set-versions/build.xml" target="skb-set-versions">
-									<property name="moduleFile" value="../asciitable/src/bundle/pm/project.properties"/>
-									<property name="moduleDir" value="../asciitable"/>
-									<property name="versionFile" value="src/bundle/pm/set-versions/versions.properties"/>
-								</ant>
-								<ant antfile="src/bundle/pm/set-versions/build.xml" target="skb-set-versions">
-									<property name="moduleFile" value="../asciilist/src/bundle/pm/project.properties"/>
-									<property name="moduleDir" value="../asciilist"/>
-									<property name="versionFile" value="src/bundle/pm/set-versions/versions.properties"/>
-								</ant>
-								<ant antfile="src/bundle/pm/set-versions/build.xml" target="skb-set-versions">
-									<property name="moduleFile" value="../execs/src/bundle/pm/project.properties"/>
-									<property name="moduleDir" value="../execs"/>
-									<property name="versionFile" value="src/bundle/pm/set-versions/versions.properties"/>
-								</ant>
-								<ant antfile="src/bundle/pm/set-versions/build.xml" target="skb-set-versions">
-									<property name="moduleFile" value="../base/src/bundle/pm/project.properties"/>
-									<property name="moduleDir" value="../base"/>
-									<property name="versionFile" value="src/bundle/pm/set-versions/versions.properties"/>
-								</ant>
-								<ant antfile="src/bundle/pm/set-versions/build.xml" target="skb-set-versions">
-									<property name="moduleFile" value="../datatool/src/bundle/pm/project.properties"/>
-									<property name="moduleDir" value="../datatool"/>
-									<property name="versionFile" value="src/bundle/pm/set-versions/versions.properties"/>
-								</ant>
-								<ant antfile="src/bundle/pm/set-versions/build.xml" target="skb-set-versions">
-									<property name="moduleFile" value="../examples/src/bundle/pm/project.properties"/>
-									<property name="moduleDir" value="../examples"/>
-									<property name="versionFile" value="src/bundle/pm/set-versions/versions.properties"/>
-								</ant>
-							</target>
-						</configuration>
-						<goals><goal>run</goal></goals>
-					</execution>
-				</executions>
-			</plugin>
--->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -268,18 +210,28 @@
 
 
 	<modules>
-		<module>../asciiparagraph</module>
-		<module>../asciilist</module>
-		<module>../asciitable</module>
-		<module>../execs</module>
-		<module>../base</module>
-<!--
-		<module>../categories</module>
-		<module>../configuration</module>
--->
-		<module>../datatool</module>
-		<module>../examples</module>
-		<module>../svg2vector</module>
+		<module>../svc/project-manager</module>
+		<module>../core/interfaces</module>
+
+		<module>../j7/table</module>
+		<module>../j7/list</module>
+		<module>../j7/paragraph</module>
+
+		<module>../ascii/char-translation</module>
+		<module>../ascii/art</module>
+
+		<module>../ascii/paragraph</module>
+		<module>../ascii/list</module>
+		<module>../ascii/table</module>
+		<module>../ascii/heading</module>
+
+		<module>../svc/execs</module>
+
+		<module>../core/base</module>
+
+		<module>../app/datatool</module>
+		<module>../app/examples</module>
+		<module>../app/svg2vector</module>
 	</modules>
 
 	<profiles>

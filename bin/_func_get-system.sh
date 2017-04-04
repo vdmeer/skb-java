@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Copyright 2016 Sven van der Meer <vdmeer.sven@mykolab.com>
 ##
@@ -16,78 +16,41 @@
 ##
 
 ##
-## Sets file versions for a particular project using given version properties.
-## Call
+## Function to determine the UNIX system a script is executed on.
+## Source file, call function, will set variable "_system"
 ##
 ## @package    de.vandermeer.skb
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
 ## @copyright  2014-2015 Sven van der Meer
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
-## @version    v2.3.0 build 160303 (03-Mar-16)
+## @version    v2.4.0 build 170404 (04-Apr-17)
 
 
-##
 ## Get system, need this information for creating build scripts
 ## taken from: https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux#3466183 - see there for details
-##
+_system=
 GetSystem()
 {
 	case "$(uname -s)" in
 		Darwin)
 			echo 'found Mac OS X'
-			system=MAC
+			_system=MAC
 			;;
 		Linux)
 			echo 'Linux'
-			system=LINUX
+			_system=LINUX
 			;;
 		CYGWIN*)
 			echo 'found Cygwin'
-			system=CYGWIN
+			_system=CYGWIN
 			;;
 		MINGW32*|MSYS*)
 			echo 'found MS Windows'
-			system=WINDOWS
+			_system=WINDOWS
 			;;
 		*)
 			echo 'found other OS'
-			system="???" 
+			_system="???" 
 			;;
 	esac
 }
-
-
-##
-## Sets directories for specific systems (call GetSystem first)
-##
-SetDirectories()
-{
-	home_abs=`pwd`
-
-	CP=${LIB_HOME}/*
-	SCRIPT_NAME=`basename $0`
-
-	echo "set directories: $system"
-	if [ "$system" == "CYGWIN" ] ; then
-		if [[ $home_abs == *"/cygdrive"* ]]; then
-			home_sh="/"`echo $home_abs | cut -d/ -f4-`
-		else
-			home_sh=${home_abs}
-		fi
-	else
-		home_sh=${home_abs}
-	fi
-}
-
-
-GetSystem
-SetDirectories
-
-ant="ant -f src/bundle/pm/set-versions/build.xml -DversionFile=$home_sh/src/bundle/pm/set-versions/versions.properties"
-
-projects=`cat src/bundle/pm/projects.pm`
-for dir in $projects
-do
-	prj_dir=`echo $dir | sed -e 's/^.*=//'`
-	$ant -DmoduleDir=$home_sh/$prj_dir -DmoduleFile=$home_sh/$prj_dir/src/bundle/pm/project.properties
-done

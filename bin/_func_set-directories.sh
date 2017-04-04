@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## Copyright 2014-2016 Sven van der Meer <vdmeer.sven@mykolab.com>
+## Copyright 2016 Sven van der Meer <vdmeer.sven@mykolab.com>
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -16,34 +16,34 @@
 ##
 
 ##
-## Script to clone all active SKB projects from GitHub.
-## Simply call, all clones will be done in the parent directory
+## Sets directories: absolute (OS specific) and sh (non OS specific absolute).
+## Source file, call function, will set variables "_home_abs" and "_home_sh"
 ##
 ## @package    de.vandermeer.skb
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
-## @copyright  2014-2016 Sven van der Meer
+## @copyright  2014-2015 Sven van der Meer
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
 ## @version    v2.4.0 build 170404 (04-Apr-17)
+
+
 ##
+## Sets directories for specific systems (call GetSystem first)
+##
+SetDirectories()
+{
+	_home_abs=`pwd`
 
-moddir=../
+	CP=${LIB_HOME}/*
+	SCRIPT_NAME=`basename $0`
 
-active_projects="asciilist asciiparagraph asciitable execs svg2vector"
-active_projects_skb_java="base datatool examples"
-active_projects_plugins="project-manager"
-
-for prj in $active_projects
-do
-	(cd $moddir; git clone https://github.com/vdmeer/$prj.git $prj)
-done
-
-for prj in $active_projects_skb_java
-do
-	(cd $moddir; git clone https://github.com/vdmeer/skb-java-$prj.git $prj)
-done
-
-mkdir $moddir/mvn
-for prj in $active_projects_plugins
-do
-	(cd $moddir; git clone https://github.com/vdmeer/$prj-maven-plugin.git mvn/$prj)
-done
+	echo "set directories: $_system"
+	if [ "$_system" == "CYGWIN" ] ; then
+		if [[ $_home_abs == *"/cygdrive"* ]]; then
+			_home_sh="/"`echo $_home_abs | cut -d/ -f4-`
+		else
+			_home_sh=${_home_abs}
+		fi
+	else
+		_home_sh=${_home_abs}
+	fi
+}
