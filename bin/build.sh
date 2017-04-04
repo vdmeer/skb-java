@@ -23,7 +23,7 @@
 ## @author     Sven van der Meer <vdmeer.sven@mykolab.com>
 ## @copyright  2014-2015 Sven van der Meer
 ## @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License, Version 2.0
-## @version    v2.3.0 build 160306 (06-Mar-16)
+## @version    v2.3.0 build 170404 (04-Apr-17)
 
 
 ## script name for output
@@ -87,14 +87,14 @@ Help()
 	echo "       Usage:  $MOD_SCRIPT_NAME [-options]"
 	echo ""
 	echo "       Options"
-	echo "         -b    - generate bundle documentation (and copy to target)"
-	echo "         -c    - run 'mvn clean' before the actual goal"
-	echo "         -g    - Maven goal to build for"
-	echo "         -h    - this help screen"
-	echo "         -j    - generate javadoc jar "
-	echo "         -p    - project to build as a folder relative from the current directory"
-	echo "         -s    - generate a sources jar"
-	echo "         -t    - build with tests (if not present, build without tests)"
+	echo "         -b          - generate bundle documentation (and copy to target)"
+	echo "         -c          - run 'mvn clean' before the actual goal"
+	echo "         -g GOAL     - Maven goal to build for"
+	echo "         -h          - this help screen"
+	echo "         -j          - generate javadoc jar "
+	echo "         -p FOLDER   - project to build as a folder relative from the current directory"
+	echo "         -s          - generate a sources jar"
+	echo "         -t          - build with tests (if not present, build without tests)"
 	echo ""
 	exit 255;
 }
@@ -166,7 +166,7 @@ do
 		;;
 
 		#-h prints help and exists
-		-h)		Help;exit 255;;
+		-h)		Help;exit 0;;
 
 		*)	echo "$MOD_SCRIPT_NAME: undefined CLI option - $1"; exit 255;;
 	esac

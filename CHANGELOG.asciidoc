@@ -4,6 +4,7 @@ v2.3.0 - release - 2016-03-##
 * fixed a few scipt problems
 * added set-version-master
 * added clone-git
+* changed to a new project directory structure
 
 
 v2.2.0 - release - 2016-03-01

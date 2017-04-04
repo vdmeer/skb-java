@@ -219,6 +219,7 @@
 
 		<module>../ascii/char-translation</module>
 		<module>../ascii/art</module>
+
 		<module>../ascii/paragraph</module>
 		<module>../ascii/list</module>
 		<module>../ascii/table</module>
@@ -229,10 +230,7 @@
 		<module>../core/base</module>
 
 		<module>../app/datatool</module>
-<!--
 		<module>../app/examples</module>
--->
-
 		<module>../app/svg2vector</module>
 	</modules>
 

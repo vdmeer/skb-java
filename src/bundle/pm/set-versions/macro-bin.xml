@@ -11,7 +11,7 @@
 				<substitution expression="## @version    ${skb.version.long.sh}"/>
 				<fileset dir="@{module.dir}" >
 					<include name="bin/**/*.sh" />
-					<exclude name="**/set-master-version.sh" />
+					<exclude name="**/set-srcfile-versions.sh" />
 				</fileset>
 			</replaceregexp>
 		</sequential>
