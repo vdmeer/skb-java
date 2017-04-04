@@ -210,8 +210,8 @@
 
 
 	<modules>
-		<module>../mvn/project-manager</module>
-		<module>../skb/interfaces</module>
+		<module>../svc/project-manager</module>
+		<module>../core/interfaces</module>
 
 		<module>../j7/table</module>
 		<module>../j7/list</module>
@@ -224,19 +224,16 @@
 		<module>../ascii/table</module>
 		<module>../ascii/heading</module>
 
-		<module>../misc/execs</module>
+		<module>../svc/execs</module>
 
-		<module>../skb/base</module>
+		<module>../core/base</module>
+
+		<module>../app/datatool</module>
 <!--
-		<module>../skb/categories</module>
-		<module>../skb/configuration</module>
--->
-		<module>../skb/datatool</module>
-<!--
-		<module>../skb/examples</module>
+		<module>../app/examples</module>
 -->
 
-		<module>../misc/svg2vector</module>
+		<module>../app/svg2vector</module>
 	</modules>
 
 	<profiles>

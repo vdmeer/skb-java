@@ -2,7 +2,8 @@ j7-asciitable=../j7/table
 j7-asciilist=../j7/list
 j7-asciiparagraph=../j7/paragraph
 
-skb-interfaces=../skb/interfaces
+skb-interfaces=../core/interfaces
+skb-base=../core/base
 
 char-translation=../ascii/char-translation
 asciiheading=../ascii/heading
@@ -11,11 +12,9 @@ asciilist=../ascii/list
 asciiutfthemes=../ascii/art
 asciiparagraph=../ascii/paragraph
 
-execs=../misc/execs
-svg2vector=../misc/svg2vector
+execs=../svc/execs
+mvn-prj-manager=../svc/project-manager
 
-mvn-prj-manager=../mvn/project-manager
-
-skb-base=../skb/base
-skb-datatool=../skb/datatool
-skb-examples=../skb/examples
+svg2vector=../app/svg2vector
+skb-datatool=../app/datatool
+skb-examples=../app/examples
