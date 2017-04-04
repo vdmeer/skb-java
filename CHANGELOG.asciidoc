@@ -1,4 +1,9 @@
-v2.3.0 - release - 2016-03-##
+v2.4.0 - release - 2017-04-04
+-----------------------------
+* changed most scripts for module handling
+* changed project structure (and module folders)
+
+v2.3.0 - release - 2016-03-03
 -----------------------------
 * added svg2vector to projects
 * fixed a few scipt problems
