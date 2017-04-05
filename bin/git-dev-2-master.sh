@@ -304,8 +304,9 @@ fi
 if [ $entry_point -lt 7 ]; then
 	echo "- running a full build"
 	RunCmd ./bin/build.sh -p $project -g install -b -s -j -t -c -q
-	if [ $show_only == true ]; then
-		if [ $? -ne 0 ]; then
+	_ex=$?
+	if [ $show_only != true ]; then
+		if [ $_ex -ne 0 ]; then
 			echo ""
 			echo "    -> problem running a full build"
 			exit 255
@@ -387,8 +388,9 @@ fi
 if [ $entry_point -lt 102 ]; then
 	echo "- setting @version information in source files"
 	RunCmd ./bin/set-srcfile-versions.sh -p $project
+	_ex=$?
 	if [ $show_only != true ]; then
-		if [ $? -ne 0 ]; then
+		if [ $_ex -ne 0 ]; then
 			echo ""
 			echo "    -> problem setting @version information in source files"
 			exit 255
@@ -402,8 +404,9 @@ fi
 if [ $entry_point -lt 103 ]; then
 	echo "- running a full build"
 	RunCmd ./bin/build.sh -p $project -g install -b -s -j -t -c -q
-	if [ $show_only == true ]; then
-		if [ $? -ne 0 ]; then
+	_ex=$?
+	if [ $show_only != true ]; then
+		if [ $_ex -ne 0 ]; then
 			echo ""
 			echo "    -> problem running a full build"
 			exit 255
@@ -485,11 +488,11 @@ if [ $entry_point -lt 108 ]; then
 		EchoCmd "(cd $project; git describe --tags)"
 	else
 		_tag=`(cd $project; git describe --tags)`
-		if [ "$tag" != "v${_version}" ]
-		echo ""
-			echo "    -> problem describe tag"
-			exit 255
-		fi
+#		if [ "$tag" != "v${_version}" ]; then
+#			echo ""
+#			echo "    -> problem describe tag"
+#			exit 255
+#		fi
 	fi
 	echo 108 > $project/$entry_point_fn
 fi
