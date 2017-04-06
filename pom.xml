@@ -210,28 +210,28 @@
 
 
 	<modules>
-		<module>../svc/project-manager</module>
-		<module>../core/interfaces</module>
+		<module>projects/svc/project-manager</module>
+		<module>projects/core/interfaces</module>
 
-		<module>../j7/table</module>
-		<module>../j7/list</module>
-		<module>../j7/paragraph</module>
+		<module>projects/j7/table</module>
+		<module>projects/j7/list</module>
+		<module>projects/j7/paragraph</module>
 
-		<module>../ascii/char-translation</module>
-		<module>../ascii/art</module>
+		<module>projects/ascii/char-translation</module>
+		<module>projects/ascii/art</module>
 
-		<module>../ascii/paragraph</module>
-		<module>../ascii/list</module>
-		<module>../ascii/table</module>
-		<module>../ascii/heading</module>
+		<module>projects/ascii/paragraph</module>
+		<module>projects/ascii/list</module>
+		<module>projects/ascii/table</module>
+		<module>projects/ascii/heading</module>
 
-		<module>../svc/execs</module>
+		<module>projects/svc/execs</module>
 
-		<module>../core/base</module>
+		<module>projects/core/base</module>
 
-		<module>../app/datatool</module>
-		<module>../app/examples</module>
-		<module>../app/svg2vector</module>
+		<module>projects/app/datatool</module>
+		<module>projects/app/examples</module>
+		<module>projects/app/svg2vector</module>
 	</modules>
 
 	<profiles>

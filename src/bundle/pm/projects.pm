@@ -1,20 +1,20 @@
-j7-asciitable=../j7/table
-j7-asciilist=../j7/list
-j7-asciiparagraph=../j7/paragraph
+j7-asciitable=projects/j7/table
+j7-asciilist=projects/j7/list
+j7-asciiparagraph=projects/j7/paragraph
 
-skb-interfaces=../core/interfaces
-skb-base=../core/base
+skb-interfaces=projects/core/interfaces
+skb-base=projects/core/base
 
-char-translation=../ascii/char-translation
-asciiheading=../ascii/heading
-asciitable=../ascii/table
-asciilist=../ascii/list
-asciiutfthemes=../ascii/art
-asciiparagraph=../ascii/paragraph
+char-translation=projects/ascii/char-translation
+asciiheading=projects/ascii/heading
+asciitable=projects/ascii/table
+asciilist=projects/ascii/list
+asciiutfthemes=projects/ascii/art
+asciiparagraph=projects/ascii/paragraph
 
-execs=../svc/execs
-mvn-prj-manager=../svc/project-manager
+execs=projects/svc/execs
+mvn-prj-manager=projects/svc/project-manager
 
-svg2vector=../app/svg2vector
-skb-datatool=../app/datatool
-skb-examples=../app/examples
+svg2vector=projects/app/svg2vector
+skb-datatool=projects/app/datatool
+skb-examples=projects/app/examples
