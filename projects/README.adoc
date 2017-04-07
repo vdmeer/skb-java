@@ -1,0 +1,2 @@
+This is the directory with all active SKB Java projects.
+Use `./bin/clone-projects.sh` in the parent directory to create required folder structure and clone all repos from Github.
