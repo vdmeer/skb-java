@@ -42,7 +42,7 @@ if [ ! -d "$prjdir/ascii" ]; then
 fi
 (cd $prjdir/ascii;git clone git@github.com:vdmeer/ascii-utf-themes.git;mv ascii-utf-themes art)
 (cd $prjdir/ascii;git clone git@github.com:vdmeer/char-translation.git)
-#(cd $prjdir/ascii;git clone 
+(cd $prjdir/ascii;git clone git@github.com:vdmeer/asciiheading.git;mv asciiheading heading)
 (cd $prjdir/ascii;git clone git@github.com:vdmeer/asciilist.git;mv asciilist list)
 (cd $prjdir/ascii;git clone git@github.com:vdmeer/asciiparagraph.git;mv asciiparagraph paragraph)
 (cd $prjdir/ascii;git clone git@github.com:vdmeer/asciitable.git;mv asciitable table)
