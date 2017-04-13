@@ -1,21 +1,21 @@
 ##
 ## ANTLR 4 and StringTemplate
 ##
-antlr4=org.antlr antlr4 4.5.1
+antlr4=org.antlr antlr4 4.7
 st4=org.antlr ST4 4.0.8
 
 ##
 ## APACHE Software (Commons)
 ##
-commons-cli=commons-cli commons-cli 1.3.1
-commons-io=commons-io commons-io 2.4
-commons-lang3=org.apache.commons commons-lang3 3.4
+commons-cli=commons-cli commons-cli 1.4
+commons-io=commons-io commons-io 2.5
+commons-lang3=org.apache.commons commons-lang3 3.5
 
 ##
 ## MAVEN Plugins
 ##
-maven-plugin-api=org.apache.maven maven-plugin-api 3.0.5
-maven-plugin-annotations=org.apache.maven.plugin-tools maven-plugin-annotations 3.4
+maven-plugin-api=org.apache.maven maven-plugin-api 3.5.0
+maven-plugin-annotations=org.apache.maven.plugin-tools maven-plugin-annotations 3.5
 maven-project=org.apache.maven maven-project 2.2.1
 
 ##
