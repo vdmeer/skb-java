@@ -4,7 +4,7 @@ pm.version.asciidoctor.asciidoclet=1.5.4
 pm.version.maven-compiler-plugin=3.6.1
 pm.version.maven-jar-plugin=3.0.2
 pm.version.maven-javadoc-plugin=2.10.4
-pm.version.maven-site-plugin=3.6
+pm.version.maven-site-plugin=3.5
 pm.version.maven-source-plugin=3.0.1
 pm.version.maven-resources-plugin=3.0.2
 
