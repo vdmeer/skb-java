@@ -45,3 +45,8 @@ mockito-core=org.mockito mockito-core 2.0.3-beta
 ## Lorem Ipsum
 ##
 loremipsum=de.sven-jacobs loremipsum 1.0
+
+##
+## Hamcrest
+##
+hamcrest-junit=org.hamcrest hamcrest-junit 2.0.0.0
