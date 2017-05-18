@@ -295,15 +295,6 @@ fi
 
 
 if [ -z $project ]; then
-	#if [ $do_jd_jd == true ]; then
-	#	$mvn javadoc:javadoc
-	#	if [ $? -ne 0 ]; then
-	#		echo ""
-	#		echo "    -> problem running '$mvn javadoc:javadoc'"
-	#		exit 255
-	#	fi
-	#fi
-
 	$mvn $maven_arg
 	if [ $? -ne 0 ]; then
 		echo ""
@@ -311,15 +302,6 @@ if [ -z $project ]; then
 		exit 255
 	fi
 else
-	#if [ $do_jd_jd == true ]; then
-	#	$mvn -pl $project javadoc:javadoc
-	#	if [ $? -ne 0 ]; then
-	#		echo ""
-	#		echo "    -> problem running '$mvn -pl $project javadoc:javadoc'"
-	#		exit 255
-	#	fi
-	#fi
-
 	$mvn -pl $project $maven_arg
 	if [ $? -ne 0 ]; then
 		echo ""
