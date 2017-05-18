@@ -52,7 +52,6 @@ if [ ! -d "$prjdir/core" ]; then
 	mkdir $prjdir/core
 fi
 (cd $prjdir/core;git clone git@github.com:vdmeer/skb-java-interfaces.git;mv skb-java-interfaces interfaces)
-(cd $prjdir/core;git clone git@github.com:vdmeer/skb-java-base.git;mv skb-java-base base)
 
 
 if [ ! -d "$prjdir/j7" ]; then
@@ -70,4 +69,5 @@ if [ ! -d "$prjdir/svc" ]; then
 	mkdir $prjdir/svc
 fi
 (cd $prjdir/svc;git clone git@github.com:vdmeer/execs.git)
+(cd $prjdir/svc;git clone git@github.com:vdmeer/skb-shell.git;mv skb-shell shell)
 (cd $prjdir/svc;git clone git@github.com:vdmeer/project-manager-maven-plugin.git;mv project-manager-maven-plugin project-manager)

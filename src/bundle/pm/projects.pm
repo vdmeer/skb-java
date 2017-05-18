@@ -3,7 +3,6 @@ j7-asciilist=projects/j7/list
 j7-asciiparagraph=projects/j7/paragraph
 
 skb-interfaces=projects/core/interfaces
-skb-base=projects/core/base
 
 char-translation=projects/ascii/char-translation
 asciiheading=projects/ascii/heading
@@ -13,6 +12,7 @@ asciiutfthemes=projects/ascii/art
 asciiparagraph=projects/ascii/paragraph
 
 execs=projects/svc/execs
+skb-shell=projects/svc/shell
 mvn-prj-manager=projects/svc/project-manager
 
 svg2vector=projects/app/svg2vector

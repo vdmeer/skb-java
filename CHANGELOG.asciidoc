@@ -1,10 +1,12 @@
-v2.4.0 - release - 2017-04-04
------------------------------
+=== v2.4.1 - patches - 2017-##-##
+* extended `bin/build.sh` with `-a` and `-s` options
+* pushed a few versions
+
+=== v2.4.0 - release - 2017-04-04
 * changed most scripts for module handling
 * changed project structure (and module folders)
 
-v2.3.0 - release - 2016-03-03
------------------------------
+=== v2.3.0 - release - 2016-03-03
 * added svg2vector to projects
 * fixed a few scipt problems
 * added set-version-master
@@ -12,14 +14,12 @@ v2.3.0 - release - 2016-03-03
 * changed to a new project directory structure
 
 
-v2.2.0 - release - 2016-03-01
------------------------------
+=== v2.2.0 - release - 2016-03-01
 * removed old (bash script based) project coordination
 * added new (maven plugin based) project coordination
 
 
-v2.1.0 - release - 2016-02-26
------------------------------
+=== v2.1.0 - release - 2016-02-26
 * moved all scripts to bin folder
 * moved all sourcing files to bin folder
 * added script short cuts (bin)
@@ -27,13 +27,11 @@ v2.1.0 - release - 2016-02-26
 * added external dependency to project settings files and create-pom task
 
 
-v2.0.0 - release - 2015-12-12
------------------------------
+=== v2.0.0 - release - 2015-12-12
 * full version of module scripting environment
 * scripts for cloning and setting up the SKB locally
 
 
-pre v2.0.0 (2007-1015)
-----------------------
+=== pre v2.0.0 (2007-1015)
 * building the Skb_TextUtils
 * historic version remains on GitHub: https://github.com/vdmeer/skb-historic

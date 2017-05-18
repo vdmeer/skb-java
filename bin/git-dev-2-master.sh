@@ -303,7 +303,7 @@ fi
 ## ep=7
 if [ $entry_point -lt 7 ]; then
 	echo "- running a full build"
-	RunCmd ./bin/build.sh -p $project -g install -b -s -j -t -c -q
+	RunCmd ./bin/build.sh -p $project -g install -b -r -j -jj -t -c -q
 	_ex=$?
 	if [ $show_only != true ]; then
 		if [ $_ex -ne 0 ]; then
@@ -403,7 +403,7 @@ fi
 ## ep=103
 if [ $entry_point -lt 103 ]; then
 	echo "- running a full build"
-	RunCmd ./bin/build.sh -p $project -g install -b -s -j -t -c -q
+	RunCmd ./bin/build.sh -p $project -g install -b -r -j -jj -t -c -q
 	_ex=$?
 	if [ $show_only != true ]; then
 		if [ $_ex -ne 0 ]; then

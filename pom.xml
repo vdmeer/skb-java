@@ -71,7 +71,7 @@
 			<plugin>
 				<groupId>de.vandermeer</groupId>
 				<artifactId>project-manager-maven-plugin</artifactId>
-				<version>0.0.3-SNAPSHOT</version>
+				<version>0.0.4-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<id>run-project-manager</id>
@@ -175,16 +175,6 @@
 							<title>SKB - All</title>
 							<packages>de.vandermeer.skb*:de.vandermeer.svg2vector</packages>
 						</group>
-<!--
-						<group>
-							<title>Vector Formats</title>
-							<packages>org.freehep.graphicsio.emf*:org.freehep.graphicsio.pdf*:org.freehep.graphicsio.ps*:org.freehep.graphicsio.svg*:org.freehep.graphicsio.swf*</packages>
-						</group>
-						<group>
-							<title>Bitmap Formats</title>
-							<packages>org.freehep.graphicsio.gif*:org.freehep.graphicsio.png*:org.freehep.graphicsio.ppm*:org.freehep.graphicsio.raw*</packages>
-						</group>
--->
 					</groups>
 
 					<docfilessubdirs>true</docfilessubdirs>
@@ -226,12 +216,13 @@
 		<module>projects/ascii/heading</module>
 
 		<module>projects/svc/execs</module>
+		<module>projects/svc/shell</module>
 
-		<module>projects/core/base</module>
-
-		<module>projects/app/datatool</module>
 		<module>projects/app/examples</module>
 		<module>projects/app/svg2vector</module>
+<!--
+		<module>projects/app/datatool</module>
+-->
 	</modules>
 
 	<profiles>

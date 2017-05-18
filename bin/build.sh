@@ -32,8 +32,14 @@ MOD_SCRIPT_NAME=`basename $0`
 ## true for build with tests, false for w/o
 do_tests=false
 
-## true for running goal clena first, false for w/o
+## true for running goal clean first, false for w/o
 do_clean=false
+
+## true for running goal site when finished standard goal, false for w/o
+do_site=false
+
+## true for running goal javadoc:javadoc first, when successful run standard goal, false for w/o
+do_jd_jd=false
 
 ## true for generate bundle docs, false for w/o
 do_bd=false
@@ -90,14 +96,17 @@ Help()
 	echo "       Usage:  $MOD_SCRIPT_NAME [-options]"
 	echo ""
 	echo "       Options"
+	echo "         -a          - build everything, but not quiet, without tests, no site"
 	echo "         -b          - generate bundle documentation (and copy to target)"
 	echo "         -c          - run 'mvn clean' before the actual goal"
 	echo "         -g GOAL     - Maven goal to build for"
 	echo "         -h          - this help screen"
-	echo "         -j          - generate javadoc jar "
+	echo "         -j          - generate javadoc jar"
+	echo "         -jj         - run goal javadoc:javadoc (prints errors even when using asciidoctor"
 	echo "         -p FOLDER   - project to build as a folder relative from the current directory"
 	echo "         -q          - run maven in quiet mode"
-	echo "         -s          - generate a sources jar"
+	echo "         -r          - generate a sources jar"
+	echo "         -s          - build a site after given goal"
 	echo "         -t          - build with tests (if not present, build without tests)"
 	echo ""
 	exit 255;
@@ -139,6 +148,17 @@ do
 			shift
 		;;
 
+		#-a all build features
+		-a)
+			do_tests=false
+			do_bd=true
+			do_src_jar=true
+			do_jd_jar=true
+			do_clean=true
+			do_jd_jd=true
+			shift
+		;;
+
 		#-t with tests
 		-t)
 			do_tests=true
@@ -151,19 +171,25 @@ do
 			shift
 		;;
 
-		#-s generate sources jar
-		-s)
+		#-r generate sources jar
+		-r)
 			do_src_jar=true
 			shift
 		;;
 
-		#-j generate sources jar
+		#-j generate javadoc jar
 		-j)
 			do_jd_jar=true
 			shift
 		;;
 
-		#-q maven i nquiet mode
+		#-jj run javadoc:javadoc
+		-jj)
+			do_jd_jd=true
+			shift
+		;;
+
+		#-q maven in quiet mode
 		-q)
 			mvn_quiet=true
 			shift
@@ -172,6 +198,12 @@ do
 		#-c run mvn clean
 		-c)
 			do_clean=true
+			shift
+		;;
+
+		#-s run mvn site
+		-s)
+			do_site=true
 			shift
 		;;
 
@@ -196,8 +228,12 @@ else
 	echo "$MOD_SCRIPT_NAME: building for goal $goal"
 fi
 if [ $do_clean == true ]; then
-	echo "$MOD_SCRIPT_NAME: running 'clean' before $goal"
+	echo "$MOD_SCRIPT_NAME: running 'clean' before '$goal'"
 	goal="clean $goal"
+fi
+if [ $do_site == true ]; then
+	echo "$MOD_SCRIPT_NAME: running 'site' after '$goal'"
+	goal="$goal site"
 fi
 
 if [ $do_tests == true ]; then
@@ -207,6 +243,13 @@ else
 	echo "$MOD_SCRIPT_NAME: building without tests"
 	test_arg="-DskipTests"
 fi
+
+if [ $do_jd_jd == true ]; then
+	echo "$MOD_SCRIPT_NAME: running 'javadoc:javadoc' before '$goal'"
+	goal="javadoc:javadoc $goal"
+fi
+
+
 
 profiles_arg=""
 if [ $do_bd == true ]; then
@@ -250,7 +293,17 @@ if [ $mvn_quiet == true ]; then
 	maven_arg="$maven_arg -q"
 fi
 
+
 if [ -z $project ]; then
+	#if [ $do_jd_jd == true ]; then
+	#	$mvn javadoc:javadoc
+	#	if [ $? -ne 0 ]; then
+	#		echo ""
+	#		echo "    -> problem running '$mvn javadoc:javadoc'"
+	#		exit 255
+	#	fi
+	#fi
+
 	$mvn $maven_arg
 	if [ $? -ne 0 ]; then
 		echo ""
@@ -258,6 +311,15 @@ if [ -z $project ]; then
 		exit 255
 	fi
 else
+	#if [ $do_jd_jd == true ]; then
+	#	$mvn -pl $project javadoc:javadoc
+	#	if [ $? -ne 0 ]; then
+	#		echo ""
+	#		echo "    -> problem running '$mvn -pl $project javadoc:javadoc'"
+	#		exit 255
+	#	fi
+	#fi
+
 	$mvn -pl $project $maven_arg
 	if [ $? -ne 0 ]; then
 		echo ""

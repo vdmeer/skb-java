@@ -2,6 +2,7 @@
 ## ANTLR 4 and StringTemplate
 ##
 antlr4=org.antlr antlr4 4.7
+antlr4-runtime=org.antlr antlr4-runtime 4.7
 st4=org.antlr ST4 4.0.8
 
 ##
