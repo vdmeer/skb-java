@@ -48,10 +48,8 @@ fi
 (cd $prjdir/ascii;git clone git@github.com:vdmeer/asciitable.git;mv asciitable table)
 
 
-if [ ! -d "$prjdir/core" ]; then
-	mkdir $prjdir/core
-fi
-(cd $prjdir/core;git clone git@github.com:vdmeer/skb-java-interfaces.git;mv skb-java-interfaces interfaces)
+
+(cd $prjdir;git clone git@github.com:vdmeer/skb-java-interfaces.git;mv skb-java-interfaces interfaces)
 
 
 if [ ! -d "$prjdir/j7" ]; then
